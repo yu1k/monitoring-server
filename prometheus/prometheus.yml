@@ -4,7 +4,7 @@ global:
   #evaluation_interval: 10m
   
   external_labels:
-    monitor: "server-monitor"
+    monitor: "network01"
 
 #rule_files:
 #   - "/var/app/prometheus/alert.rules"
