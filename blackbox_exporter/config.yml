@@ -1,0 +1,7 @@
+modules:
+  icmp_v4:
+    prober: icmp
+    timeout: 5s
+    icmp:
+      preferred_ip_protocol: "ip4"
+      #source_ip_address: ""
