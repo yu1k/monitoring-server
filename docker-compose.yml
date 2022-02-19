@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  grafana:
+    tty: true
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    env_file:
+      - ./grafana/grafana.env
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    restart: always
+  
+  prometheus_server:
+    tty: true
+    image: prom/prometheus
+    container_name: prometheus_server
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      # /etc/prometheus/data を ./prometheus/promdata ディレクトリとマウント
+      - ./prometheus/promdata:/etc/prometheus/data
+    restart: always
+  
+  # ホストを監視用の Node Exporter
+  node_exporter:
+    tty: true
+    image: prom/node-exporter
+    container_name: node_exporter
+    ports:
+      - 9100:9100
+    volumes:
+      - /proc:/host/proc
+      - /sys:/host/sys
+      - /:/rootfs
+    restart: always
+
+  # SNMP Exporter
+  snmp_exporter:
+    tty: true
+    image: prom/snmp-exporter
+    container_name: snmp_exporter
+    ports:
+      - 9116:9116
+    volumes:
+      - ./prometheus/snmp_exporter:/etc/snmp_exporter
+    #network_mode: "host"
+    restart: always
+  
+  # Blackbox Exporter
+  blackbox_exporter:
+    tty: true
+    image: prom/blackbox-exporter
+    container_name: blackbox_exporter
+    ports:
+      - 9115:9115
+    volumes:
+      - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    restart: always
