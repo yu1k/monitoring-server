@@ -1,0 +1,74 @@
+global:
+  scrape_interval: 30s
+  scrape_timeout: 15s
+  #evaluation_interval: 10m
+  
+  external_labels:
+    monitor: "server-monitor"
+
+#rule_files:
+#   - "/var/app/prometheus/alert.rules"
+
+scrape_configs:
+  # サーバ の監視
+  #- job_name: "hostname"
+  #  static_configs:
+  #    - targets: ["hostname:9100"]
+  
+  ##################################################
+  # 監視基盤ホスト の監視
+  ##################################################
+  - job_name: "prometheus_server"
+    static_configs:
+      - targets: ["localhost:9090"]
+  ##################################################
+  # VM01を監視
+  ##################################################
+  - job_name: "vm01"
+    static_configs:
+      - targets: ["172.21.0.10:9100"]
+  
+  ##################################################
+  # SNMP Exporter の設定
+  ##################################################
+  - job_name: snmp_exporter
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    metrics_path: /snmp
+    static_configs:
+    - targets:
+      # RTX1200
+      - 172.20.0.1
+    params:
+      module:
+        - if_mib
+    tls_config:
+      insecure_skip_verify: true
+    relabel_configs:
+      # URL param: target=対象ホストのIPアドレス/ホスト名
+      - source_labels: [__address__]
+        target_label: __param_target
+      # label instance
+      - source_labels: [__param_target]
+        target_label: instance
+      # 情報を取得する SNMP Exporter のIPアドレス/ホスト名
+      - target_label: __address__
+        replacement: 172.21.0.10:9116
+
+  ##################################################
+  # ホストを死活監視するための Blackbox Exporter
+  ##################################################
+  - job_name: "blackbox_exporter"
+    metrics_path: /probe
+    params:
+      module: [icmp_v4]
+    static_configs:
+      - targets:
+        - 172.20.0.1
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 172.21.0.10:9115
