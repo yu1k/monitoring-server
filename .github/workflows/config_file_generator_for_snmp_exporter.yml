@@ -1,0 +1,177 @@
+name: Config generator for SNMP Exporter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  setup_vm:
+    runs-on: ubuntu-latest
+    # ref: https://docs.github.com/ja/actions/using-workflows/workflow-syntax-for-github-actions#defaults
+    defaults:
+      run:
+        shell: bash
+        # 作業ディレクトリを設定する
+        working-directory: prometheus/snmp_exporter
+    # ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
+    timeout-minutes: 5
+    
+    steps:
+      - name: set up
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.17.7
+        id: go
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: prometheus/snmp_exporter
+
+      # ワークフローを高速化するために依存関係をキャッシュさせる
+      # ref: https://github.com/actions/cache/blob/main/examples.md#go---modules
+      - name: Cache 
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+        
+  # Config generator for SNMP Exporter
+  generate_config_for_snmp_exporter:
+    needs: setup_vm
+    runs-on: ubuntu-latest
+    # ref: https://docs.github.com/ja/actions/using-workflows/workflow-syntax-for-github-actions#defaults
+    defaults:
+      run:
+        shell: bash
+        # 作業ディレクトリを設定する
+        working-directory: prometheus/snmp_exporter
+    # ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
+    timeout-minutes: 5
+    
+    steps:
+      # ref: https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@v2
+          
+      - name: Check path of current directory
+        shell: bash
+        run: |
+          # Check shell Type
+          echo $SHELL
+          
+          pwd
+          ls .
+      
+      - name: Check $GOPATH, $HOME and $GITHUB_WORKSPACE
+        shell: bash
+        run: |
+          # デフォルトのGOPATHの確認と設定
+          echo 'Default GOPATH: ' $GOPATH
+          export GOPATH=$HOME/go
+          echo 'GOPATH: ' $GOPATH
+          
+          # HOME の確認
+          echo 'HOME: ' $HOME
+          # GITHUB_WORKSPACE の確認
+          echo 'GITHUB_WORKSPACE: ' $GITHUB_WORKSPACE
+      
+      - name: Remove $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml to initialize the repository.
+        shell: bash
+        run: |
+          rm $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml
+          echo 'List segments: ' && ls .
+          
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          
+          git add $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml
+          git commit -m "remove snmp.yml"
+          git push origin main
+        
+      - name: setup for snmp and misc dependencies
+        shell: bash
+        run: |
+          # unzipコマンド、p7zip-full、make、build-essential、などビルドと準備に使うツール
+          # Net-SNMP等ライブラリをapt経由でインストールする
+          sudo apt-get update && sudo apt-get install -y unzip p7zip-full make build-essential libsnmp-dev
+      
+      - name: Install snmp_exporter repository and Build the generator command for snmp exporter
+        shell: bash
+        run: |
+          # $GOPATH を明示的に設定していない場合は、$HOME/go/binにインストールされる
+          # PATH: /home/runner/go/src/github.com/prometheus/snmp_exporter/generator
+          go get github.com/prometheus/snmp_exporter/generator
+          export GOPATH=$HOME/go
+          echo 'GOPATH: ' $GOPATH
+          
+          cd $GOPATH/src/github.com/prometheus/snmp_exporter/generator
+          echo 'List segments: ' && ls .
+          go build
+          make mibs
+      
+      - name: Require for YAMAHA Private MIB
+        shell: bash
+        run: |
+          export GOPATH=$HOME/go
+          echo 'GOPATH: ' $GOPATH
+          
+          # Require for YAMAHA Private MIB
+          echo 'List segments: ' && ls .
+          cd $GOPATH/src/github.com/prometheus/snmp_exporter/generator/mibs && wget http://www.rtpro.yamaha.co.jp/RT/docs/mib/yamaha-private-mib.zip
+          unzip ./yamaha-private-mib.zip
+          cd ./yamaha-private-mib && cp ./yamaha-* ../
+          
+          # $GOPATH/src/github.com/prometheus/snmp_exporter/generator/mibs/ に戻る
+          cd ../
+          # $GOPATH/src/github.com/prometheus/snmp_exporter/generator/ に戻る
+          cd ../
+          
+          # generator.yml をコピーする
+          echo 'List segments: ' && ls .
+          
+          echo 'pwd: ' && pwd
+          
+          cd $GITHUB_WORKSPACE
+          echo 'List segments: ' && ls .
+          echo 'pwd: ' && pwd
+          
+          # 初期状態の $GOPATH/src/github.com/prometheus/snmp_exporter/generator/generator.yml を削除する
+          rm $GOPATH/src/github.com/prometheus/snmp_exporter/generator/generator.yml
+          ls $GOPATH/src/github.com/prometheus/snmp_exporter/generator
+          # 自分で設定した generator.yml を $GOPATH/src/github.com/prometheus/snmp_exporter/generator にコピーさせる
+          cp $GITHUB_WORKSPACE/prometheus/snmp_exporter/generator.yml $GOPATH/src/github.com/prometheus/snmp_exporter/generator
+          echo 'List segments: ' && ls .
+      
+      - name: Start running for generate snmp config
+        shell: bash
+        run: |
+          export GOPATH=$HOME/go
+          echo 'GOPATH: ' $GOPATH
+          
+          ## Start Running
+          echo "Start running for generate: "
+          cd $GOPATH/src/github.com/prometheus/snmp_exporter/generator
+          export MIBDIRS=./mibs
+          ./generator generate
+          
+          # generatorで自動生成された $GOPATH/src/github.com/prometheus/snmp_exporter/generator/snmp.yml を $GITHUB_WORKSPACE/prometheus/snmp_exporter に移動させる
+          echo 'List segments: ' && ls .
+          cp ./snmp.yml $GITHUB_WORKSPACE/prometheus/snmp_exporter
+          
+      - name: git commit and git push to GitHub
+        run: |
+          echo 'pwd: ' && pwd
+          echo 'List segments: ' && ls .
+          
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          
+          git add ./snmp.yml
+          git commit -m "add snmp.yml"
+          git push origin main
