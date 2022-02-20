@@ -46,7 +46,7 @@ services:
     ports:
       - 9116:9116
     volumes:
-      - ./prometheus/snmp_exporter:/etc/snmp_exporter
+      - ./snmp_exporter:/etc/snmp_exporter
     #network_mode: "host"
     restart: always
   
