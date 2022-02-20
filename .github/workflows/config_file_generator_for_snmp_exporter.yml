@@ -14,7 +14,7 @@ jobs:
       run:
         shell: bash
         # 作業ディレクトリを設定する
-        working-directory: prometheus/snmp_exporter
+        working-directory: snmp_exporter
     # ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
     timeout-minutes: 5
     
@@ -28,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: prometheus/snmp_exporter
+          path: snmp_exporter
 
       # ワークフローを高速化するために依存関係をキャッシュさせる
       # ref: https://github.com/actions/cache/blob/main/examples.md#go---modules
@@ -51,7 +51,7 @@ jobs:
       run:
         shell: bash
         # 作業ディレクトリを設定する
-        working-directory: prometheus/snmp_exporter
+        working-directory: snmp_exporter
     # ref: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
     timeout-minutes: 5
     
@@ -81,16 +81,16 @@ jobs:
           # GITHUB_WORKSPACE の確認
           echo 'GITHUB_WORKSPACE: ' $GITHUB_WORKSPACE
       
-      - name: Remove $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml to initialize the repository.
+      - name: Remove $GITHUB_WORKSPACE/snmp_exporter/snmp.yml to initialize the repository.
         shell: bash
         run: |
-          rm $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml
+          rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           echo 'List segments: ' && ls .
           
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           
-          git add $GITHUB_WORKSPACE/prometheus/snmp_exporter/snmp.yml
+          git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           git commit -m "remove snmp.yml"
           git push origin main
         
@@ -131,10 +131,7 @@ jobs:
           cd ../
           # $GOPATH/src/github.com/prometheus/snmp_exporter/generator/ に戻る
           cd ../
-          
-          # generator.yml をコピーする
           echo 'List segments: ' && ls .
-          
           echo 'pwd: ' && pwd
           
           cd $GITHUB_WORKSPACE
@@ -144,8 +141,8 @@ jobs:
           # 初期状態の $GOPATH/src/github.com/prometheus/snmp_exporter/generator/generator.yml を削除する
           rm $GOPATH/src/github.com/prometheus/snmp_exporter/generator/generator.yml
           ls $GOPATH/src/github.com/prometheus/snmp_exporter/generator
-          # 自分で設定した generator.yml を $GOPATH/src/github.com/prometheus/snmp_exporter/generator にコピーさせる
-          cp $GITHUB_WORKSPACE/prometheus/snmp_exporter/generator.yml $GOPATH/src/github.com/prometheus/snmp_exporter/generator
+          # 自分で設定した $GITHUB_WORKSPACE/snmp_exporter/generator.yml を $GOPATH/src/github.com/prometheus/snmp_exporter/generator にコピーさせる
+          cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $GOPATH/src/github.com/prometheus/snmp_exporter/generator
           echo 'List segments: ' && ls .
       
       - name: Start running for generate snmp config
@@ -160,9 +157,9 @@ jobs:
           export MIBDIRS=./mibs
           ./generator generate
           
-          # generatorで自動生成された $GOPATH/src/github.com/prometheus/snmp_exporter/generator/snmp.yml を $GITHUB_WORKSPACE/prometheus/snmp_exporter に移動させる
+          # generatorで自動生成された $GOPATH/src/github.com/prometheus/snmp_exporter/generator/snmp.yml を $GITHUB_WORKSPACE/snmp_exporter にコピーさせる
           echo 'List segments: ' && ls .
-          cp ./snmp.yml $GITHUB_WORKSPACE/prometheus/snmp_exporter
+          cp ./snmp.yml $GITHUB_WORKSPACE/snmp_exporter
           
       - name: git commit and git push to GitHub
         run: |
