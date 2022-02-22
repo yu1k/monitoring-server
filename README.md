@@ -8,7 +8,7 @@
   - OS(cat /etc/os-release): 20.04.4 LTS (Focal Fossa)
   - シェル(echo $SHELL): bash
   - docker -v: Docker version 20.10.7, build 20.10.7-0ubuntu5~20.04.2
-  - docker-compose -v: docker-compose version 1.25.0, build unknown
+  - docker-compose -v: docker-compose version 1.25.0
 
 ```
 $ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && cd $_/node_exporter_template
