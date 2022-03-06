@@ -23,3 +23,22 @@ modules:
     version: 1
     auth:
       community: public
+  
+  #
+  # NEC IX router
+  #
+  nec_ix:
+    walk:
+      - picoSystem
+      - picoIpSecFlowMonitorMIB
+      - picoExtIfMIB
+      - picoNetworkMonitorMIB
+      - picoIsdnMIB
+      - picoNgnMIB
+      - picoMobileMIB
+      - picoIPv4MIB
+      - picoIPv6MIB
+    version: 1
+    auth:
+      community: public
+    modules:
