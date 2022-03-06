@@ -41,4 +41,3 @@ modules:
     version: 1
     auth:
       community: public
-    modules:
