@@ -38,6 +38,6 @@ modules:
       - picoMobileMIB
       - picoIPv4MIB
       - picoIPv6MIB
-    version: 1
+    version: 2
     auth:
       community: public
