@@ -1,8 +1,10 @@
 # monitoring-server
 
-## 使い方
+## node_exporter を動かす
 
-### 監視対象ホストでの準備（ docker-compose を利用して起動 ）
+### 監視対象ホストでの準備
+
+#### docker-compose を利用して起動
 
 - 監視対象ホストの環境
   - OS(cat /etc/os-release): 20.04.4 LTS (Focal Fossa)
@@ -17,7 +19,7 @@ $ docker-compose up -d
 
 監視対象ホストで上記コマンドを実行し、 node_exporter を起動させる。監視対象ホストの `http://hostname:9100` にアクセスするとメトリクスを取れているか確認できます。
 
-### 監視対象ホストでの準備（ シェルスクリプトを実行して起動 ）
+#### シェルスクリプト を実行して起動
 
 - 監視対象ホストの環境
   - OS(cat /etc/os-release): 20.04.4 LTS (Focal Fossa)
