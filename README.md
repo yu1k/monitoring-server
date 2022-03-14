@@ -1,5 +1,7 @@
 # monitoring-server
 
+[![Config generator for SNMP Exporter](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml/badge.svg)](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml)
+
 ## node_exporter を動かす
 
 ### 監視対象ホストでの準備
