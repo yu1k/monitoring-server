@@ -2,7 +2,20 @@
 
 [![Config generator for SNMP Exporter](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml/badge.svg)](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml)
 
-## node_exporter を動かす
+## 動かし方
+
+```
+$ docker-compose up -d --build
+すべてのサービスを起動させる
+
+$ docker-compose down --rmi local
+起動したコンテナを停止し、コンテナ、ネットワーク、ボリューム、イメージ等の関連するリソースを削除する
+
+$ docker-compose restart [container_name]
+指定したコンテナを再起動する
+```
+
+## 監視対象で node_exporter を動かす
 
 ### 監視対象ホストでの準備
 
@@ -33,4 +46,15 @@ $ chmod +x ./setup-node-exporter.sh && ./setup-node-exporter.sh
 
 $ ps
 > node_exporter が起動しているか確認する
+```
+
+## エラーが発生した場合
+
+```
+docker logs --tail 25 --follow --timestamps [container_name]
+指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら調査する。上のコマンドではログファイルの後ろから25件のログを吐き出しています。
+
+$ docker-compose up --build [container_name]
+指定したコンテナをビルドし直して up する
+
 ```
