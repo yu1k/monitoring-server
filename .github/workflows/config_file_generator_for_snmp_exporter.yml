@@ -116,7 +116,7 @@ jobs:
           cd $HOME/work && git clone https://github.com/prometheus/snmp_exporter.git
           cd snmp_exporter
 
-          cd $HOME/work/prometheus/snmp_exporter/generator/
+          cd $HOME/work/snmp_exporter/generator/
           echo 'List segments: ' && ls .
           go build
           make mibs
@@ -129,13 +129,13 @@ jobs:
 
           # Require for YAMAHA Private MIB
           echo 'List segments: ' && ls .
-          cd $HOME/work/prometheus/snmp_exporter/generator/mibs && wget http://www.rtpro.yamaha.co.jp/RT/docs/mib/yamaha-private-mib.zip
+          cd $HOME/work/snmp_exporter/generator/mibs && wget http://www.rtpro.yamaha.co.jp/RT/docs/mib/yamaha-private-mib.zip
           unzip ./yamaha-private-mib.zip
           cd ./yamaha-private-mib && cp ./yamaha-* ../
 
-          # $HOME/work/prometheus/snmp_exporter/generator/mibs/ に戻る
+          # $HOME/work/snmp_exporter/generator/mibs/ に戻る
           cd ../
-          # $HOME/work/prometheus/snmp_exporter/generator/ に戻る
+          # $HOME/work/snmp_exporter/generator/ に戻る
           cd ../
           echo 'List segments: ' && ls .
           echo 'pwd: ' && pwd
@@ -144,11 +144,11 @@ jobs:
           echo 'List segments: ' && ls .
           echo 'pwd: ' && pwd
 
-          # 初期状態の $HOME/work/prometheus/snmp_exporter/generator/generator.yml  を削除する
-          rm $HOME/work/prometheus/snmp_exporter/generator/generator.yml
-          ls $GOPATH/bin/github.com/prometheus/snmp_exporter/generator
-          # 自分で設定した $GITHUB_WORKSPACE/snmp_exporter/generator.yml を $HOME/work/prometheus/snmp_exporter/generator/ にコピーさせる
-          cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $HOME/work/prometheus/snmp_exporter/generator/
+          # 初期状態の $HOME/work/snmp_exporter/generator/generator.yml  を削除する
+          rm $HOME/work/snmp_exporter/generator/generator.yml
+          ls $HOME/work/snmp_exporter/generator/
+          # 自分で設定した $GITHUB_WORKSPACE/snmp_exporter/generator.yml を $HOME/work/snmp_exporter/generator/ にコピーさせる
+          cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $HOME/work/snmp_exporter/generator/
           echo 'List segments: ' && ls .
 
       - name: Start running for generate snmp config
@@ -159,11 +159,11 @@ jobs:
 
           ## Start Running
           echo "Start running for generate: "
-          cd $HOME/work/prometheus/snmp_exporter/generator
+          cd $HOME/work/snmp_exporter/generator
           export MIBDIRS=./mibs
           ./generator generate
 
-          # generatorで自動生成された $HOME/work/prometheus/snmp_exporter/generator/snmp.yml を $GITHUB_WORKSPACE/snmp_exporter/ にコピーさせる
+          # generatorで自動生成された $HOME/work/snmp_exporter/generator/snmp.yml を $GITHUB_WORKSPACE/snmp_exporter/ にコピーさせる
           echo 'List segments: ' && ls .
           cp ./snmp.yml $GITHUB_WORKSPACE/snmp_exporter/
 
