@@ -109,12 +109,12 @@ jobs:
           go install github.com/prometheus/snmp_exporter/generator@latest
           export GOPATH=$HOME/go
           echo 'GOPATH: ' $GOPATH
-          
+
           # デバッグ用
-          echo 'ls01: ' && ls $GOPATH/src/
-          echo 'ls02: ' && ls /home/runner/go/src/
-          echo 'ls03: ' && ls /home/runner/go/
-          
+          echo 'ls01 $GOPATH/: ' && ls $GOPATH/
+          echo 'ls02 /home/runner/go/src/: ' && ls /home/runner/go/src/
+          echo 'ls03/home/runner/go/: ' && ls /home/runner/go/
+
           cd $GOPATH/src/github.com/prometheus/snmp_exporter/generator
           echo 'List segments: ' && ls .
           go build
