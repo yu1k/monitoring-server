@@ -106,7 +106,7 @@ jobs:
         run: |
           # $GOPATH を明示的に設定していない場合は、$HOME/go/binにインストールされる
           # PATH: /home/runner/go/src/github.com/prometheus/snmp_exporter/generator
-          go get github.com/prometheus/snmp_exporter/generator
+          go install github.com/prometheus/snmp_exporter/generator
           export GOPATH=$HOME/go
           echo 'GOPATH: ' $GOPATH
           
