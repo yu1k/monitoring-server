@@ -111,9 +111,10 @@ jobs:
           echo 'GOPATH: ' $GOPATH
 
           # デバッグ用
-          echo 'ls01 $GOPATH/: ' && ls $GOPATH/
-          echo 'ls02 /home/runner/go/src/: ' && ls /home/runner/go/src/
-          echo 'ls03/home/runner/go/: ' && ls /home/runner/go/
+          echo 'ls01 $GOPATH/bin: ' && ls $GOPATH/bin
+          echo 'ls02 $GOPATH/pkg: ' && ls $GOPATH/pkg
+          echo 'ls03 /home/runner/go/bin: ' && ls /home/runner/go/bin
+          echo 'ls04 /home/runner/go/pkg: ' && ls /home/runner/go/pkg
 
           cd $GOPATH/bin/github.com/prometheus/snmp_exporter/generator
           echo 'List segments: ' && ls .
