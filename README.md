@@ -51,7 +51,7 @@ $ ps
 ## エラーが発生した場合
 
 ```
-docker logs --tail 25 --follow --timestamps [container_name]
+$ docker-compose logs --tail 25 --follow --timestamps [container_name]
 指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら調査する。上のコマンドではログファイルの後ろから25件のログを吐き出しています。
 
 $ docker-compose up --build [container_name]
