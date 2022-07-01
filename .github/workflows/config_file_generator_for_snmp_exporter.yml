@@ -113,7 +113,7 @@ jobs:
           # デバッグ用
           echo 'ls01 $GOPATH/bin: ' && ls $GOPATH/bin
           echo 'ls02 $GOPATH/pkg: ' && ls $GOPATH/pkg
-          echo 'ls02 $GOPATH/bin/generator: ' && ls $GOPATH/bin/generator
+          echo 'cat02 $GOPATH/bin/generator: ' && cat $GOPATH/bin/generator
 
           cd $GOPATH/bin/github.com/prometheus/snmp_exporter/generator
           echo 'List segments: ' && ls .
