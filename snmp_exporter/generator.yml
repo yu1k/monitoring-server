@@ -76,6 +76,7 @@ modules:
   #
   nec_ix:
     walk:
+      - picoOriginal
       - picoSystem
       - picoIpSecFlowMonitorMIB
       - picoExtIfMIB
