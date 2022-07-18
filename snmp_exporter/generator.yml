@@ -20,7 +20,7 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
-    version: 1
+    version: 2
     auth:
       community: public
   
