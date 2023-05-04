@@ -78,7 +78,8 @@ $ ps
 
 ```
 $ docker-compose logs --tail 25 --follow --timestamps [container_name]
-指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら気合いで調査します。上のコマンドではログファイルの後ろから25件のログを吐き出しています。
+指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら気合いで調査します。
+上のコマンドではログファイルの後ろから25件のログを吐き出しています。
 
 $ docker-compose up -d [container_name]
 指定したコンテナを再度起動します。
