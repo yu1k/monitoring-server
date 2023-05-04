@@ -19,22 +19,24 @@ $ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && c
 $ docker network create --driver=bridge --subnet=172.20.0.0/24 br_prom_network --attachable -o com.docker.network.bridge.name="br_prom_network"
 
 $ docker-compose up -d
-すべてのサービスを起動させる
+すべてのサービスを起動させます。
 ```
+
+上記コマンドを実行して監視サーバ等のDockerコンテナを起動します。
 
 監視サーバのコンテナを動かしているホストのeth0が所属しているVLANのサブネットと監視サーバのコンテナが所属しているDockerネットワークのサブネットが重複してしまうことを防ぐため、br_prom_networkというDockerネットワークを作成します。br_prom_networkの `--subnet` のパラメータは環境に応じて適当に変更します。
 
 ```
 $ docker-compose down --rmi local
-起動したコンテナを停止し、コンテナ、ネットワーク、ボリューム、イメージ等の関連するリソースを削除する
+起動したコンテナを停止し、コンテナ、ネットワーク、ボリューム、イメージ等の関連するリソースを削除します。
 
 $ docker-compose restart [container_name]
-指定したコンテナを再起動する
+指定したコンテナを再起動します。
 ```
 
 上記コマンドを実行してコンテナを操作します。
 
-## 監視対象で node_exporter を動かす
+## 監視対象で node_exporter を動かします。
 
 ### 監視対象ホストでの準備
 
@@ -58,7 +60,7 @@ $ docker-compose up -d
 
 node_exporterコンテナを動かしているホストのeth0が所属しているVLANのサブネットとnode_exporterが所属しているDockerネットワークのサブネットが重複してしまうことを防ぐため、br_prom_networkというDockerネットワークを作成します。br_prom_networkの `--subnet` のパラメータは環境に応じて適当に変更します。
 
-#### シェルスクリプト を実行して起動
+#### シェルスクリプト を実行して起動します。
 
 - 監視対象ホストの環境
   - OS(cat /etc/os-release): 20.04.4 LTS (Focal Fossa)
@@ -69,16 +71,15 @@ $ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && c
 $ chmod +x ./setup-node-exporter.sh && ./setup-node-exporter.sh
 
 $ ps
-> node_exporter が起動しているか確認する
+> node_exporter が起動しているか確認します。
 ```
 
 ## エラーが発生した場合
 
 ```
 $ docker-compose logs --tail 25 --follow --timestamps [container_name]
-指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら調査する。上のコマンドではログファイルの後ろから25件のログを吐き出しています。
+指定したDockerコンテナのログを吐き出して、Google検索等で検索しながら気合いで調査します。上のコマンドではログファイルの後ろから25件のログを吐き出しています。
 
-$ docker-compose up --build [container_name]
-指定したコンテナをビルドし直して up する
-
+$ docker-compose up -d [container_name]
+指定したコンテナを再度起動します。
 ```
