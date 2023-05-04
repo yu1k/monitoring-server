@@ -12,4 +12,10 @@ services:
       - /proc:/host/proc
       - /sys:/host/sys
       - /:/rootfs
+    networks:
+      - br_prom_network
     restart: always
+
+networks:
+  br_prom_network:
+    external: true

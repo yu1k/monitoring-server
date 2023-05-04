@@ -11,8 +11,10 @@ services:
       - ./grafana/grafana.env
     volumes:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - br_prom_network
     restart: always
-  
+
   prometheus_server:
     tty: true
     image: prom/prometheus
@@ -23,8 +25,10 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       # /etc/prometheus/data を ./prometheus/promdata ディレクトリとマウント
       - ./prometheus/promdata:/etc/prometheus/data
+    networks:
+      - br_prom_network
     restart: always
-  
+
   # ホストを監視用の Node Exporter
   node_exporter:
     tty: true
@@ -36,6 +40,8 @@ services:
       - /proc:/host/proc
       - /sys:/host/sys
       - /:/rootfs
+    networks:
+      - br_prom_network
     restart: always
 
   # SNMP Exporter
@@ -47,9 +53,10 @@ services:
       - 9116:9116
     volumes:
       - ./snmp_exporter:/etc/snmp_exporter
-    #network_mode: "host"
+    networks:
+      - br_prom_network
     restart: always
-  
+
   # Blackbox Exporter
   blackbox_exporter:
     tty: true
@@ -59,4 +66,10 @@ services:
       - 9115:9115
     volumes:
       - ./blackbox_exporter/config.yml:/etc/blackbox_exporter/config.yml
+    networks:
+      - br_prom_network
     restart: always
+
+networks:
+  br_prom_network:
+    external: true

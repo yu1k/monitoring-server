@@ -2,18 +2,37 @@
 
 [![Config generator for SNMP Exporter](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml/badge.svg)](https://github.com/yu1k/monitoring-server/actions/workflows/config_file_generator_for_snmp_exporter.yml)
 
+監視サーバ等の設定ファイルです。
+
+## 環境
+
+  - OS(cat /etc/os-release): 20.04.4 LTS (Focal Fossa)
+  - シェル(echo $SHELL): bash
+  - docker -v: Docker version 20.10.7, build 20.10.7-0ubuntu5~20.04.2
+  - docker-compose -v: docker-compose version 1.25.0
+
 ## 動かし方
 
 ```
+$ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && cd $_
+
+$ docker network create --driver=bridge --subnet=172.20.0.0/24 br_prom_network --attachable -o com.docker.network.bridge.name="br_prom_network"
+
 $ docker-compose up -d --build
 すべてのサービスを起動させる
+```
 
+監視サーバのコンテナを動かしているホストのeth0が所属しているVLANのサブネットと監視サーバのコンテナが所属しているDockerネットワークのサブネットが重複してしまうことを防ぐため、br_prom_networkというDockerネットワークを作成します。br_prom_networkの `--subnet` のパラメータは環境に応じて適当に変更します。
+
+```
 $ docker-compose down --rmi local
 起動したコンテナを停止し、コンテナ、ネットワーク、ボリューム、イメージ等の関連するリソースを削除する
 
 $ docker-compose restart [container_name]
 指定したコンテナを再起動する
 ```
+
+上記コマンドを実行してコンテナを操作します。
 
 ## 監視対象で node_exporter を動かす
 
@@ -29,10 +48,15 @@ $ docker-compose restart [container_name]
 
 ```
 $ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && cd $_/node_exporter_template
+
+$ docker network create --driver=bridge --subnet=172.20.0.0/24 br_prom_network --attachable -o com.docker.network.bridge.name="br_prom_network"
+
 $ docker-compose up -d
 ```
 
-監視対象ホストで上記コマンドを実行し、 node_exporter を起動させる。監視対象ホストの `http://hostname:9100` にアクセスするとメトリクスを取れているか確認できます。
+監視対象ホストで上記コマンドを実行し、br_prom_networkというDockerネットワークを作成して node_exporterを起動させる。監視対象ホストの `http://hostname:9100` にアクセスするとメトリクスを取れているか確認できます。
+
+node_exporterコンテナを動かしているホストのeth0が所属しているVLANのサブネットとnode_exporterが所属しているDockerネットワークのサブネットが重複してしまうことを防ぐため、br_prom_networkというDockerネットワークを作成します。br_prom_networkの `--subnet` のパラメータは環境に応じて適当に変更します。
 
 #### シェルスクリプト を実行して起動
 
