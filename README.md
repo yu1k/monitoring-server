@@ -18,7 +18,7 @@ $ git clone https://github.com/yu1k/monitoring-server.git monitoring-server && c
 
 $ docker network create --driver=bridge --subnet=172.20.0.0/24 br_prom_network --attachable -o com.docker.network.bridge.name="br_prom_network"
 
-$ docker-compose up -d --build
+$ docker-compose up -d
 すべてのサービスを起動させる
 ```
 
