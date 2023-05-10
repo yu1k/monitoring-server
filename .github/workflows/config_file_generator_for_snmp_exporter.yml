@@ -153,9 +153,9 @@ jobs:
           # Require for Elecom WAB-S1167-PS Private MIB
           echo 'List segments: ' && ls .
 
-          # $HOME/work/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib を $HOME/work/snmp_exporter/generator/mibs に移動する
+          # $GITHUB_WORKSPACE/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib を $HOME/work/snmp_exporter/generator/mibs に移動する
           cd $HOME/work/snmp_exporter/generator/mibs/
-          mv $HOME/work/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib ./
+          mv $GITHUB_WORKSPACE/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib ./
 
           # $HOME/work/snmp_exporter/generator/ に戻る
           cd ../
