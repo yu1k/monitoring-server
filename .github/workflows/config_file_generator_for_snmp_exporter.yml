@@ -202,4 +202,4 @@ jobs:
 
           git add ./snmp.yml
           git commit -m "add snmp.yml"
-          git push origin main
+          git push origin HEAD
