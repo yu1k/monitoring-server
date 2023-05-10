@@ -92,7 +92,7 @@ jobs:
 
           git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           git commit -m "remove snmp.yml"
-          git push --set-upstream origin HEAD
+          git push origin config-elecom-private-mib
 
       - name: setup for snmp and misc dependencies
         shell: bash
@@ -202,4 +202,4 @@ jobs:
 
           git add ./snmp.yml
           git commit -m "add snmp.yml"
-          git push origin HEAD
+          git push origin config-elecom-private-mib
