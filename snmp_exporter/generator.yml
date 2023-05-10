@@ -23,7 +23,7 @@ modules:
     version: 2
     auth:
       community: public
-  
+
   #######################################################################
   # RTX1200のMIB生成コンフィグ
   # - RFC1213
@@ -41,7 +41,7 @@ modules:
       - sysObjectID
       # 起動からの経過時間
       - sysUpTime
-      
+
       #
       # システム情報
       #
@@ -96,7 +96,8 @@ modules:
   #
   elecom_ap:
     walk:
-      - ClientInfoEntry
+      - ssidConfigTable
+      - eleApWABSSIDConfigTable
     version: 2
     auth:
       community: public
