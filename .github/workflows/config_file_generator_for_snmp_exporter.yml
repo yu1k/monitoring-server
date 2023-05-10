@@ -84,8 +84,6 @@ jobs:
       - name: Remove $GITHUB_WORKSPACE/snmp_exporter/snmp.yml to initialize the repository.
         shell: bash
         run: |
-          git checkout config-elecom-private-mib
-
           rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           echo 'List segments: ' && ls .
 
@@ -94,7 +92,7 @@ jobs:
 
           git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           git commit -m "remove snmp.yml"
-          git push origin config-elecom-private-mib
+          git push origin main
 
       - name: setup for snmp and misc dependencies
         shell: bash
@@ -204,4 +202,4 @@ jobs:
 
           git add ./snmp.yml
           git commit -m "add snmp.yml"
-          git push origin config-elecom-private-mib
+          git push origin main
