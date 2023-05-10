@@ -144,13 +144,6 @@ jobs:
           echo 'List segments: ' && ls .
           echo 'pwd: ' && pwd
 
-          # 初期状態の $HOME/work/snmp_exporter/generator/generator.yml  を削除する
-          rm $HOME/work/snmp_exporter/generator/generator.yml
-          ls $HOME/work/snmp_exporter/generator/
-          # 自分で設定した $GITHUB_WORKSPACE/snmp_exporter/generator.yml を $HOME/work/snmp_exporter/generator/ にコピーさせる
-          cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $HOME/work/snmp_exporter/generator/
-          echo 'List segments: ' && ls .
-
       - name: Require for Elecom WAB-S1167-PS Private MIB
         shell: bash
         run: |
@@ -173,6 +166,9 @@ jobs:
           echo 'List segments: ' && ls .
           echo 'pwd: ' && pwd
 
+      - name: Remove default snmp_exporter/generator/generator.yml
+        shell: bash
+        run: |
           # 初期状態の $HOME/work/snmp_exporter/generator/generator.yml  を削除する
           rm $HOME/work/snmp_exporter/generator/generator.yml
           ls $HOME/work/snmp_exporter/generator/
