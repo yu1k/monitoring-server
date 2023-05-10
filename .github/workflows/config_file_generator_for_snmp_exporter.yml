@@ -80,6 +80,8 @@ jobs:
           echo 'HOME: ' $HOME
           # GITHUB_WORKSPACE の確認
           echo 'GITHUB_WORKSPACE: ' $GITHUB_WORKSPACE
+          # GITHUB_WORKSPACE 以下のファイルを確認する
+          echo 'ls $GITHUB_WORKSPACE: ' && ls $GITHUB_WORKSPACE/
 
       - name: Remove $GITHUB_WORKSPACE/snmp_exporter/snmp.yml to initialize the repository.
         shell: bash
