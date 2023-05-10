@@ -92,7 +92,7 @@ jobs:
 
           git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           git commit -m "remove snmp.yml"
-          git push origin HEAD
+          git push --set-upstream origin HEAD
 
       - name: setup for snmp and misc dependencies
         shell: bash
