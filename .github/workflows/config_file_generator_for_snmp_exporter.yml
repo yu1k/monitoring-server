@@ -84,6 +84,8 @@ jobs:
       - name: Remove $GITHUB_WORKSPACE/snmp_exporter/snmp.yml to initialize the repository.
         shell: bash
         run: |
+          git checkout config-elecom-private-mib
+
           rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
           echo 'List segments: ' && ls .
 
