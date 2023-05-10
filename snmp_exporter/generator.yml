@@ -97,7 +97,6 @@ modules:
   elecom_ap:
     walk:
       - ssidConfigTable
-      - eleApWABSSIDConfigTable
     version: 2
     auth:
       community: public
