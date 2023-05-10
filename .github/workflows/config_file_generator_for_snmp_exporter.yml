@@ -151,6 +151,35 @@ jobs:
           cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $HOME/work/snmp_exporter/generator/
           echo 'List segments: ' && ls .
 
+      - name: Require for Elecom WAB-S1167-PS Private MIB
+        shell: bash
+        run: |
+          # export GOPATH=$HOME/go
+          # echo 'GOPATH: ' $GOPATH
+
+          # Require for Elecom WAB-S1167-PS Private MIB
+          echo 'List segments: ' && ls .
+
+          # $HOME/work/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib を $HOME/work/snmp_exporter/generator/mibs に移動する
+          cd $HOME/work/snmp_exporter/generator/mibs/
+          mv $HOME/work/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib ./
+
+          # $HOME/work/snmp_exporter/generator/ に戻る
+          cd ../
+          echo 'List segments: ' && ls .
+          echo 'pwd: ' && pwd
+
+          cd $GITHUB_WORKSPACE
+          echo 'List segments: ' && ls .
+          echo 'pwd: ' && pwd
+
+          # 初期状態の $HOME/work/snmp_exporter/generator/generator.yml  を削除する
+          rm $HOME/work/snmp_exporter/generator/generator.yml
+          ls $HOME/work/snmp_exporter/generator/
+          # 自分で設定した $GITHUB_WORKSPACE/snmp_exporter/generator.yml を $HOME/work/snmp_exporter/generator/ にコピーさせる
+          cp $GITHUB_WORKSPACE/snmp_exporter/generator.yml $HOME/work/snmp_exporter/generator/
+          echo 'List segments: ' && ls .
+
       - name: Start running for generate snmp config
         shell: bash
         run: |
