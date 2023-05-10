@@ -91,12 +91,12 @@ modules:
     auth:
       community: public
 
-#
-# Elecom AP
-#
-elecom_ap:
-  walk:
-    - ClientInfoEntry
-  version: 2
-  auth:
-    community: public
+  #
+  # Elecom AP
+  #
+  elecom_ap:
+    walk:
+      - ClientInfoEntry
+    version: 2
+    auth:
+      community: public
