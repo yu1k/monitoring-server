@@ -96,6 +96,6 @@ modules:
   #
   elecom_ap:
     walk:
-      - eleClientInfoTable
+      - clientStaIPAddress
     auth:
       community: public
