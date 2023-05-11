@@ -96,6 +96,6 @@ modules:
   #
   elecom_ap:
     walk:
-      - enterprises
+      - eleClientInfoTable
     auth:
       community: public
