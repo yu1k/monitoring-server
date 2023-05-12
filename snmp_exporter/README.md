@@ -8,7 +8,7 @@ SNMP Exporterのgeneratorをビルドするためには、Go 1.17以上が必要
 
 ```
 $ docker-compose up -d --build
-$ docker-compose exec /bin/bash
+$ docker-compose exec snmp_generator_container /bin/bash
 Dockerコンテナをビルドして起動し、Dockerコンテナのシェルに入ります。
 
 $ git clone https://github.com/prometheus/snmp_exporter.git
