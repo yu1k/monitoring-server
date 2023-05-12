@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  snmp_generator_container:
+    tty: true
+    build: ./
+    container_name: snmp_generator_container
+    volumes:
+      - ./:/home/
+    restart: always
