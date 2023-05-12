@@ -20,7 +20,7 @@ $ make generator
 $ make mibs
 generatorとMIBファイルを生成します。
 
-$ cp /home/generator.yml /home/snmp_exporter/generator/ && rm /home/snmp_exporter/generator/snmp.yml
+$ cp /home/generator.yml /home/snmp_exporter/generator/ && rm /home/snmp_exporter/snmp.yml
 自分で定義したgenerator.ymlをgeneratorディレクトリに移動してから既存のsnmp.ymlを削除します。
 
 
