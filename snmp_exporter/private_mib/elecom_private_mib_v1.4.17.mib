@@ -346,7 +346,7 @@ eleWabManPassword OBJECT-TYPE
 		"This OID configure Password for Manaemaent user of the Access Point.
 		 Note : This OID is related with following OID.
 			eleWabManName Manaemaent user name
-		 " 
+		 "
 	::= { wabManLogin 2 }
 
 -- ========================================
@@ -779,7 +779,7 @@ eleWabapNTPEnable OBJECT-TYPE
 -- Client
 -- ========================================
 
-	eleClientInfoTable   OBJECT-TYPE 
+	eleClientInfoTable   OBJECT-TYPE
 	  SYNTAX  SEQUENCE OF ClientInfoEntry
 	  ACCESS  not-accessible
 	  STATUS  current
@@ -988,12 +988,12 @@ eleWabapNTPEnable OBJECT-TYPE
 			STATUS  mandatory
 			DESCRIPTION
 				" This OID is configuration about Key Length of WEP authentification.
-				  This OID is available when ssidAuthType was WEP. 
+				  This OID is available when ssidAuthType was WEP.
 				[1]64bit
 				[2]128bit
 				"
 			::= { eleApWABSSIDConfigTable 4 }
-		
+
 		ssidWEPKeyType OBJECT-TYPE
 			SYNTAX	INTEGER {
 				ascii(1),
@@ -1003,7 +1003,7 @@ eleWabapNTPEnable OBJECT-TYPE
 			STATUS  mandatory
 			DESCRIPTION
 				" This OID is configuration about Key Type of WEP.
-				  This OID is available when ssidAuthType was WEP. 
+				  This OID is available when ssidAuthType was WEP.
 				[1]ascii
 				[2]hex
 				"
@@ -1062,7 +1062,7 @@ eleWabapNTPEnable OBJECT-TYPE
 				[2] TKIP
 				[3] AES_mixed_mode
 				"
-				
+
 			::= { eleApWABSSIDConfigTable 8 }
 
 		ssidWPAPreSharedKeyType OBJECT-TYPE
@@ -1192,7 +1192,7 @@ eleWabapNTPEnable OBJECT-TYPE
 		          INTEGER,
 		      wiressMode
 		          INTEGER,
-		      autoChannel 
+		      autoChannel
 		          INTEGER,
 		      channel
 		          INTEGER,
@@ -1207,7 +1207,7 @@ eleWabapNTPEnable OBJECT-TYPE
               SSIDNumber
                   INTEGER
 		  }
-		
+
 		wireless OBJECT-TYPE
 			SYNTAX INTEGER {
 				enable(1),
@@ -1285,7 +1285,7 @@ eleWabapNTPEnable OBJECT-TYPE
 			STATUS  mandatory
 			DESCRIPTION
 				"This parameter is configration of enable _ disable AutoChannel and selection of bandwidth.
-				 please specify from below. 
+				 please specify from below.
 				(Disable AutoChannel)
 				  [0] Disable
 				(Enable AutoChannel)
@@ -1316,7 +1316,7 @@ eleWabapNTPEnable OBJECT-TYPE
 			DESCRIPTION
 				"This parameter is configration of ChannelBandwidth .
 				 ChannelBandwidth configures about band width for channel.
-				 This parameter is selectable. please specify from below. 
+				 This parameter is selectable. please specify from below.
 				(11b, 11g, 11b_g)
 				  <AutoChannel On_Off>
 					[1] 20MHz
@@ -1372,7 +1372,7 @@ eleWabapNTPEnable OBJECT-TYPE
 					[4] 40MHz + next ch
 				  <AutoChannel Off (ch 140)>
 					[1] 20MHz   "
-				 
+
 			::= { eleApWABwirelessConfigTable 6 }
 
 		bss-BasicRateSet OBJECT-TYPE
@@ -1388,20 +1388,20 @@ eleWabapNTPEnable OBJECT-TYPE
 			STATUS  mandatory
 			DESCRIPTION
 				"This parameter is configration of BasicRateSet.
-				 BasicRateSet is configration of communication speed. 
+				 BasicRateSet is configration of communication speed.
 				 select the transmission speed of from below.
-				 (for 2.4MHz : 11b)  
+				 (for 2.4MHz : 11b)
 				 [0] : Disable
 				 [1] : 1,2Mbps
 				 [2] : all
-				 
-				 (for 2.4MHz : 11b)  
+
+				 (for 2.4MHz : 11b)
 				 [0] : Disable
 				 [1] : 1,2Mbps
 				 [2] : 1,2,5.5,11Mbps
 				 [3] : 1,2,5.5,6,11,12,24Mbps
 				 [5] : all
-				 
+
 				 (for 5MHz)
 				 [0] : Disable
 				 [4] : 6,12,24Mbp
@@ -1423,7 +1423,7 @@ eleWabapNTPEnable OBJECT-TYPE
 			DESCRIPTION
 				"This parameter is configration of Tx power of radio wave.
 				 Tx power configures radio wave intensity of transmit power.
-				 This parameter is selectable. please specify from below. 
+				 This parameter is selectable. please specify from below.
 				 [100]100%
 				 [90]90%
 				 [75]75%
