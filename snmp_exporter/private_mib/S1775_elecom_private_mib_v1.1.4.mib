@@ -1,0 +1,2097 @@
+-- Private MIB for WAB-S1775 use. Created on 2023/04/07
+ELECOM-Private-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, enterprises, OBJECT-TYPE, Integer32, Counter32, IpAddress, snmpModules
+        FROM SNMPv2-SMI
+    TruthValue, MacAddress, DisplayString, RowStatus
+        FROM SNMPv2-TC;
+
+snmpMIB MODULE-IDENTITY
+    LAST-UPDATED "200210160000Z"
+    ORGANIZATION "IETF SNMPv3 Working Group"
+    CONTACT-INFO
+            "WG-EMail:   snmpv3@lists.tislabs.com
+             Subscribe:  snmpv3-request@lists.tislabs.com
+
+             Co-Chair:   Russ Mundy
+                         Network Associates Laboratories
+             postal:     15204 Omega Drive, Suite 300
+                         Rockville, MD 20850-4601
+                         USA
+             EMail:      mundy@tislabs.com
+             phone:      +1 301 947-7107
+
+             Co-Chair:   David Harrington
+                         Enterasys Networks
+             postal:     35 Industrial Way
+                         P. O. Box 5005
+                         Rochester, NH 03866-5005
+                         USA
+             EMail:      dbh@enterasys.com
+             phone:      +1 603 337-2614
+
+             Editor:     Randy Presuhn
+                         BMC Software, Inc.
+             postal:     2141 North First Street
+                         San Jose, CA 95131
+                         USA
+             EMail:      randy_presuhn@bmc.com
+             phone:      +1 408 546-1006"
+    DESCRIPTION
+            "The MIB module for SNMP entities.
+
+             Copyright (C) The Internet Society (2002). This
+             version of this MIB module is part of RFC 3418;
+             see the RFC itself for full legal notices.
+            "
+    REVISION      "200210160000Z"
+    DESCRIPTION
+            "This revision of this MIB module was published as
+             RFC 3418."
+    REVISION      "199511090000Z"
+    DESCRIPTION
+            "This revision of this MIB module was published as
+             RFC 1907."
+    REVISION      "199304010000Z"
+    DESCRIPTION
+            "The initial revision of this MIB module was published
+            as RFC 1450."
+    ::= { snmpModules 1 }
+
+
+elecom					OBJECT IDENTIFIER ::= { enterprises 41868 }
+-- ========================================
+-- DHCP Settings
+-- ========================================
+elecomDHCP			OBJECT IDENTIFIER ::= { elecom 10 }
+elecomDHCPEntry		OBJECT IDENTIFIER ::= { elecomDHCP 1 }
+
+dhcpcontrol			OBJECT-TYPE
+	SYNTAX	      	INTEGER (1..2)
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"Enable/Disable DHCP client.
+		[1] get IP address from DHCP Lease(DHCP Enable)
+		[2] assign static IP address(DHCP Disable)"
+	::= { elecomDHCPEntry 1 }
+
+-- ========================================
+-- LAN IP Settings
+-- ========================================
+elecomIpSetting			OBJECT IDENTIFIER ::= { elecom 11 }
+elecomIpSettingEntry	OBJECT IDENTIFIER ::= { elecomIpSetting 1 }
+
+fixedIP 			OBJECT-TYPE
+	SYNTAX		 	IpAddress
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"LAN IP address when DHCP client disabled."
+	::= { elecomIpSettingEntry 1 }
+
+subnetMask 			OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"LAN subnet mask when DHCP client disabled."
+	::= { elecomIpSettingEntry 2 }
+
+defaultGateWay 		OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"LAN default gateway"
+	::= { elecomIpSettingEntry 3 }
+
+primaryDNS 			OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"Primary DNS"
+	::= { elecomIpSettingEntry 4}
+
+secondaryDNS			OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"Secondary DNS"
+	::= { elecomIpSettingEntry 5}
+
+-- ========================================
+-- RADIUS Settings
+-- ========================================
+elecomRADIUSTable   	OBJECT-TYPE
+	SYNTAX  			SEQUENCE OF ElecomRADIUSEntry
+	MAX-ACCESS   	not-accessible
+	STATUS  			current
+	DESCRIPTION
+		"Table of RADIUS servers."
+	::= { elecom 12 }
+
+elecomRADIUSEntry 	OBJECT-TYPE
+	SYNTAX  			ElecomRADIUSEntry
+        MAX-ACCESS   	not-accessible
+        STATUS  			current
+        DESCRIPTION
+		"This OID configures the setting of RADIUS server."
+        INDEX   { primaryRADIUSServer }
+        ::= { elecomRADIUSTable 1 }
+
+ElecomRADIUSEntry ::= 		SEQUENCE {
+	primaryRADIUSServer		DisplayString,
+	primaryAuthPort			INTEGER,
+        primarySharedSecret		DisplayString,
+        primarySessionTimeout		INTEGER,
+	primaryAccounting			INTEGER,
+        primaryAccountingPort		INTEGER,
+        secondaryRADIUSServer	DisplayString,
+        secondaryAuthPort			INTEGER,
+        secondarySharedSecret		DisplayString,
+        secondarySessionTimeout	INTEGER,
+       	secondaryAccounting		INTEGER,
+        secondaryAccountingPort	INTEGER
+}
+
+primaryRADIUSServer 	OBJECT-TYPE
+	SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+        STATUS  			current
+        DESCRIPTION
+		"This OID configures IP/hostname of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 1 }
+
+primaryAuthPort 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..65535)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Authentication Port of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 2 }
+
+primarySharedSecret 	OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Shared Secret of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 3 }
+
+primarySessionTimeout 	OBJECT-TYPE
+        SYNTAX  			INTEGER (0..86400)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Session Timeout of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 4 }
+
+primaryAccounting 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of Accounting of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 5 }
+
+primaryAccountingPort 	OBJECT-TYPE
+ 	SYNTAX  				INTEGER (1..65535)
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures Authentication Port of Primary RADIUS Server"
+        ::= { elecomRADIUSEntry 6 }
+
+secondaryRADIUSServer 	OBJECT-TYPE
+        SYNTAX  				DisplayString
+        MAX-ACCESS  		read-write
+       	STATUS  				current
+        DESCRIPTION
+            	"This OID configures IP/hostname of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 7 }
+
+secondaryAuthPort 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..65535)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Authentication Port of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 8 }
+
+secondarySharedSecret	OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Shared Secret of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 9 }
+
+secondarySessionTimeout	OBJECT-TYPE
+   	SYNTAX  				INTEGER (0..86400)
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures Session Timeout of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 10 }
+
+secondaryAccounting 	OBJECT-TYPE
+	SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of Accounting of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 11 }
+
+secondaryAccountingPort 	OBJECT-TYPE
+	SYNTAX  				INTEGER (1..65535)
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures Authentication Port of Seccondary RADIUS Server"
+        ::= { elecomRADIUSEntry 12 }
+
+-- ========================================
+-- MacAddress Filter
+-- ========================================
+elecomMacFilter				OBJECT IDENTIFIER ::= { elecom 13 }
+elecomApMacFilter OBJECT-TYPE
+	SYNTAX  SEQUENCE OF MacFilterEntry
+	MAX-ACCESS  not-accessible
+	STATUS  current
+	DESCRIPTION
+		"This OID indicate the list of the MAC address fiter of the Access Point.
+	 		 the maximum number of the register address is 255"
+	::= { elecomMacFilter 1 }
+				
+macFilterEntry 	OBJECT-TYPE
+	SYNTAX  			MacFilterEntry
+        MAX-ACCESS   	not-accessible
+        STATUS  	current
+        DESCRIPTION
+		"This OID configures the setting of MAC address filter."
+        INDEX   { macAddressFilterAllow }
+        ::= { elecomApMacFilter 1 }
+
+MacFilterEntry ::=
+		  SEQUENCE {
+		      macAddressFilterAllow DisplayString,
+		      macAddressFilterDeny DisplayString
+		  }
+
+macAddressFilterAllow OBJECT-TYPE
+	SYNTAX  DisplayString
+	MAX-ACCESS  read-only
+	STATUS  current
+	DESCRIPTION
+		"This OID is MAC address that was register to the allow list of MAC address filter."
+	::= { macFilterEntry 51 }
+
+macAddressFilterDeny OBJECT-TYPE
+	SYNTAX  DisplayString
+	MAX-ACCESS  read-only
+	STATUS  current
+	DESCRIPTION
+		"This OID is MAC address that was register to the deny list of MAC address filter."
+	::= { macFilterEntry 52 }
+
+elecomApMacFilterAdd				OBJECT IDENTIFIER ::= { elecomApMacFilter 2 }
+elecomWABAllowApMacFilterAdd				OBJECT IDENTIFIER ::= { elecomApMacFilterAdd 51 }
+elecomWABAllowApMacFilterAddOpt1		OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterAdd 0 }
+elecomWABAllowApMacFilterAddOpt2		OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterAddOpt1 0 }
+elecomWABAllowApMacFilterAddOpt3		OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterAddOpt2 0 }
+eleApWABAllowMacFilterListAdd OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID add the MAC address to the list of the allow MAC address fiter of the Access Point.
+		 the format is XX:XX:XX:XX:XX:XX
+		"
+	::= { elecomWABAllowApMacFilterAddOpt3 1 }
+
+elecomWABDenyApMacFilterAdd				OBJECT IDENTIFIER ::= { elecomApMacFilterAdd 52 }
+elecomWABDenyApMacFilterAddOpt1		OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterAdd 0 }
+elecomWABDenyApMacFilterAddOpt2		OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterAddOpt1 0 }
+elecomWABDenyApMacFilterAddOpt3		OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterAddOpt2 0 }
+eleApWAB5GMacFilterListAdd OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID add the MAC address to the list of the deny MAC address fiter of the Access Point.
+		 the format is XX:XX:XX:XX:XX:XX
+		"
+	::= { elecomWABDenyApMacFilterAddOpt3 1 }
+
+
+
+elecomApMacFilterDelete					OBJECT IDENTIFIER ::= { elecomApMacFilter 3 }
+elecomWABAllowApMacFilterDelete				OBJECT IDENTIFIER ::= { elecomApMacFilterDelete 51 }
+elecomWABAllowApMacFilterDeleteopt1			OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterDelete 0 }
+elecomWABAllowApMacFilterDeleteopt2			OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterDeleteopt1 0 }
+elecomWABAllowApMacFilterDeleteopt3			OBJECT IDENTIFIER ::= { elecomWAB2GApMacFilterDeleteopt2 0 }
+
+eleApWABAllowMacFilterDelete OBJECT-TYPE
+	SYNTAX	INTEGER (1)
+	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID delete the MAC address from the list of the allow MAC address fiter of the Access Point.
+		 To delete the Mac, write 1 to the OID.
+		"
+	::= { elecomWABAllowApMacFilterDeleteopt3 1 }
+elecomWABDenyApMacFilterDelete				OBJECT IDENTIFIER ::= { elecomApMacFilterDelete 52 }
+elecomWABDenyApMacFilterDeleteopt1			OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterDelete 0 }
+elecomWABDenyApMacFilterDeleteopt2			OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterDeleteopt1 0 }
+elecomWABDenyApMacFilterDeleteopt3			OBJECT IDENTIFIER ::= { elecomWAB5GApMacFilterDeleteopt2 0 }
+
+eleApWABDenyMacFilterDelete OBJECT-TYPE
+	SYNTAX	INTEGER (1)
+	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID delete the MAC address from the list of the deny MAC address fiter of the Access Point.
+		 To delete the Mac, write 1 to the OID.
+		"
+	::= { elecomWABDenyApMacFilterDeleteopt3 1 }
+
+elecomApMacFilterDeleteAll		OBJECT IDENTIFIER ::= { elecomApMacFilter 4 }
+
+eleApWABAllowMacFilterDeleteAll		OBJECT-TYPE
+	SYNTAX	INTEGER (1)
+	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID delete all of the MAC address from the list of the allow MAC address fiter of the Access Point.
+		 To delete all of the MAC addressthe Mac, write 1 to the OID.
+		"
+	::= { elecomApMacFilterDeleteAll 51 }
+
+eleApWABDenyMacFilterDeleteAll		OBJECT-TYPE
+	SYNTAX	INTEGER (1)
+	MAX-ACCESS	read-write
+	STATUS	current
+	DESCRIPTION
+		"This OID delete all of the MAC address from the list of the deny MAC address fiter of the Access Point.
+		 To delete all of the MAC addressthe Mac, write 1 to the OID.
+		"
+	::= { elecomApMacFilterDeleteAll 52 }
+
+
+-- ========================================
+-- Management Login
+-- ========================================
+elecomManLogin		OBJECT IDENTIFIER ::= { elecom 14 }
+elecomManLoginEntry	OBJECT IDENTIFIER ::= { elecomManLogin 1 }
+
+manname 				OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID Configure_indicate Management user name of the Access Point. 
+		  Note : This OID is related with following OID. 
+		  eleWabManPassword : Password for Management user"
+	::= { elecomManLoginEntry 1 }
+
+manpassword 			OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID configure Password for Management user of the Access Point.
+		  Note : This OID is related with following OID.
+		  eleWabManName Management user name" 
+	::= { elecomManLoginEntry 2 }
+
+-- ========================================
+-- Configuration
+-- ========================================
+elecomConfig			OBJECT IDENTIFIER ::= { elecom 15 }
+elecomConfigEntry		OBJECT IDENTIFIER ::= { elecomConfig 1 }
+configsave 				OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID backups configuration of the Access Point.
+		  To save the configuration, exec the tftp server on SNMP client before write ip address to the OID. "
+	::= { elecomConfigEntry 1 }
+
+configload 				OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID upload configuration of the Access Point.
+		  To load the configuration, exec the tftp server on SNMP client before write ip address to the OID. "
+	::= { elecomConfigEntry 2 }
+
+
+-- ========================================
+-- FW update
+-- ========================================
+elecomFW				OBJECT IDENTIFIER ::= { elecom 16 }
+elecomFWEntry		OBJECT IDENTIFIER ::= { elecomFW 1 }
+
+fwUpgrade 				OBJECT-TYPE
+	SYNTAX			IpAddress
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID updates firmware of the Access Point.
+		 To update the firmware, exec the tftp server on SNMP client before write ip address to the OID. "
+	::= { elecomFWEntry 1 }
+
+
+-- ========================================
+-- Buzzer
+-- ========================================
+elecomBuzzer			OBJECT IDENTIFIER ::= { elecom 17 }
+elecomBuzzerEntry		OBJECT IDENTIFIER ::= { elecomBuzzer 1 }
+buzzer					OBJECT-TYPE
+	SYNTAX			INTEGER
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID beep the buzzer of the Access Point.
+		  write the number of seconds to beep."
+	::= { elecomBuzzerEntry 1 }
+
+-- ========================================
+-- Syslog
+-- ========================================
+elecomSyslog			OBJECT IDENTIFIER ::= { elecom 18 }
+elecomSyslogEntry		OBJECT IDENTIFIER ::= { elecomSyslog 1 }
+
+syslogServerIp 			OBJECT-TYPE
+	SYNTAX			DisplayString
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID configure the IP address of the syslog server."
+	::= { elecomSyslogEntry 1 }
+
+-- ========================================
+-- Reboot
+-- ========================================
+elecomBoot				OBJECT IDENTIFIER ::= { elecom 19 }
+elecomBootEntry		OBJECT IDENTIFIER ::= { elecomBoot 1 }
+
+reboot 					OBJECT-TYPE
+	SYNTAX			INTEGER
+	MAX-ACCESS		read-write
+	STATUS			current
+	DESCRIPTION
+		"This OID make reboot the Access Point.
+		   to reboot the Access point, write 1 to the OID."
+	::= { elecomBootEntry 1 }
+
+-- ========================================
+-- NTP
+-- ========================================
+elecomNTP           		OBJECT IDENTIFIER ::= { elecom 20 }
+elecomNTPEntry         	OBJECT IDENTIFIER ::= { elecomNTP 1 }
+
+ntpEnable				OBJECT-TYPE
+    	SYNTAX  			INTEGER (1..2)
+    	MAX-ACCESS  	read-write
+    	STATUS  			current
+    	DESCRIPTION
+		"This OID configres the Enable or Disaable NTP Time Server."
+   	 ::= { elecomNTPEntry 1 }
+
+ntpServer 				OBJECT-TYPE
+    	SYNTAX  			DisplayString
+    	MAX-ACCESS   	read-write
+    	STATUS  			current
+    	DESCRIPTION
+		"This OID configure NTP Time Server."
+   	 ::= { elecomNTPEntry 2 }
+
+-- ========================================
+-- WPS
+-- ========================================
+elecomWPS           		OBJECT IDENTIFIER ::= { elecom 21 }
+elecomWPSEntry         	OBJECT IDENTIFIER ::= { elecomWPS 1 }
+
+wpsEnable 				OBJECT-TYPE
+    	SYNTAX 			 INTEGER (1..2)
+    	MAX-ACCESS   	read-write
+    	STATUS  			current
+    	DESCRIPTION
+       		 "This OID configres the Enable or Disaable WPS."
+    	::= { elecomWPSEntry 1 }
+
+-- ========================================
+-- Guest Network
+-- ========================================
+elecomGuestNetworkTable		OBJECT-TYPE
+      	SYNTAX  					SEQUENCE OF ElecomGuestNetworkEntry
+      	MAX-ACCESS 				not-accessible
+      	STATUS  					current
+     	DESCRIPTION
+		"Table of Guest Network."
+      ::= { elecom 22 }
+
+elecomGuestNetworkEntry 		OBJECT-TYPE
+        SYNTAX  					ElecomGuestNetworkEntry
+        MAX-ACCESS 				not-accessible
+        STATUS  					current
+        DESCRIPTION
+            	"This OID configures the setting of Guest Network."
+        INDEX   { guestnetworkEnable }
+        ::= { elecomGuestNetworkTable 1 }
+
+ElecomGuestNetworkEntry ::=	SEQUENCE {
+	guestnetworkEnable		INTEGER,
+	wirelessBand				INTEGER,
+        ssidSelect					INTEGER,
+        guestssidName				DisplayString,
+	dhcpIPAddress				IpAddress,
+        dhcpSubnetMask			IpAddress,
+        dhcpLeaseTime				INTEGER,
+       	dhcpStartingIPAddress		IpAddress,
+        dhcpEndingIPAddress		IpAddress,
+        guestConnectableTime		INTEGER,
+        connectionRestrictionTime	INTEGER,
+        guestAuthType				INTEGER,
+        senderEmail				DisplayString,
+        smtpServerAddress			DisplayString,
+        smtpServerPort				INTEGER,
+       	smtpEnableAuth			INTEGER,
+        smtpAccount				DisplayString,
+        smtpPassword				DisplayString,
+        trafficShaping				INTEGER,
+        limitedRate					INTEGER,
+        adminDeviceMAC			DisplayString,
+	connectableTime			INTEGER,
+	loadBalancing			INTEGER,
+	portsRestriAvaports		INTEGER,
+	portsRestriEdiports		INTEGER
+}
+
+guestnetworkEnable 	OBJECT-TYPE
+	SYNTAX 			INTEGER (1..2)
+        MAX-ACCESS		read-write
+	STATUS  			current
+        DESCRIPTION
+		"This OID configures Enable/Disable of Guest Network"
+        ::= { elecomGuestNetworkEntry 1 }
+
+wirelessBand 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures wireless band of Guest Network"
+        ::= { elecomGuestNetworkEntry 2 }
+
+ssidSelect 				OBJECT-TYPE
+        SYNTAX  			INTEGER (1..16)
+        MAX-ACCESS 		read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the selected SSID of Guest Network"
+        ::= { elecomGuestNetworkEntry 3 }
+
+guestssidName			OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures the name of selected SSID for Guest Network"
+        ::= { elecomGuestNetworkEntry 4 }
+
+dhcpIPAddress 			OBJECT-TYPE
+        SYNTAX  			IpAddress
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures DHCP IP Address for Guest Network"
+        ::= { elecomGuestNetworkEntry 5 }
+
+dhcpSubnetMask 		OBJECT-TYPE
+        SYNTAX  			IpAddress
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures DHCP Subnet Mask for Guest Network"
+        ::= { elecomGuestNetworkEntry 6 }
+
+dhcpLeaseTime 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..9)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures DHCP Lease Timefor Guest Network"
+        ::= { elecomGuestNetworkEntry 7 }
+
+dhcpStartingIPAddress 	OBJECT-TYPE
+        SYNTAX  			IpAddress
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures DHCP Starting IP Address for Guest Network"
+        ::= { elecomGuestNetworkEntry 8 }
+
+dhcpEndingIPAddress 	OBJECT-TYPE
+        SYNTAX  			IpAddress
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures DHCP Ending IP Address for Guest Network"
+        ::= { elecomGuestNetworkEntry 9 }
+
+guestConnectableTime 	OBJECT-TYPE
+        SYNTAX  			INTEGER (1..24)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Connectable Time of Guest Network"
+        ::= { elecomGuestNetworkEntry 10 }
+
+connectionRestrictionTime 	OBJECT-TYPE
+        SYNTAX  				INTEGER (1..24)
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures Connection Restriction of Guest Network"
+        ::= { elecomGuestNetworkEntry 11 }
+
+guestAuthType 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..3)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+          	 "This OID configures Authentication Type of Guest Network"
+        ::= { elecomGuestNetworkEntry 12 }
+
+senderEmail 			OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+		"This OID configures Sender email for Email Authentication"
+        ::= { elecomGuestNetworkEntry 13 }
+
+smtpServerAddress 		OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures SMTP Server Address for Email Authentication"
+        ::= { elecomGuestNetworkEntry 14 }
+
+smtpServerPort 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..65535)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures SMTP Server Port for Email Authentication"
+        ::= { elecomGuestNetworkEntry 15 }
+
+smtpEnableAuth 		OBJECT-TYPE
+        SYNTAX  			INTEGER (1..3)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures SMTP Auth Type for Email Authentication"
+        ::= { elecomGuestNetworkEntry 16 }
+
+smtpAccount 			OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures SMTP Account for Email Authentication"
+        ::= { elecomGuestNetworkEntry 17 }
+
+smtpPassword 			OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+           	"This OID configures SMTP Password for Email Authentication"
+        ::= { elecomGuestNetworkEntry 18 }
+
+trafficShaping 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable Traffic Shaping"
+        ::= { elecomGuestNetworkEntry 19 }
+
+limitedRate 			OBJECT-TYPE
+        SYNTAX  			INTEGER (100..43000)
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Limited Rate of Traffic Shaping"
+        ::= { elecomGuestNetworkEntry 20 }
+
+adminDeviceMAC OBJECT-TYPE
+        SYNTAX 			DisplayString
+        MAX-ACCESS  	read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures AdminDeviceMAC of Guest Network"
+        ::= { elecomGuestNetworkEntry 21 }
+
+connectableTime 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..24)
+        MAX-ACCESS  			read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures the connectable time of guest network"
+        ::= { elecomGuestNetworkEntry 22 }
+
+loadBalancing 				OBJECT-TYPE
+        SYNTAX  			INTEGER (1..50)
+        MAX-ACCESS  			read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures the loadBalancing of guest network"
+        ::= { elecomGuestNetworkEntry 23 }
+
+portsRestriAvaports 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  			read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Disable of restriction or Web/Mail only
+		[1] No Restriction
+		[2] Web/Mail only"
+        ::= { elecomGuestNetworkEntry 24 }
+
+portsRestriEdiports 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  			read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable or Disable of the ports guest network
+		[1] Enable
+		[2] Disable"
+        ::= { elecomGuestNetworkEntry 25 }
+
+-- ========================================
+-- Emergency Mode
+-- ========================================
+
+elecomEmergencyModeTable   	OBJECT-TYPE
+      SYNTAX  					SEQUENCE OF ElecomEmergencyModeEntry
+      MAX-ACCESS  				not-accessible
+      STATUS  					current
+      DESCRIPTION
+              	"Table of Emergency Mode."
+      ::= { elecom 23 }
+
+elecomEmergencyModeEntry 	OBJECT-TYPE
+        SYNTAX  					ElecomEmergencyModeEntry
+        MAX-ACCESS  			not-accessible
+        STATUS  					current
+        DESCRIPTION
+            	"This OID configures the setting of Emergency Mode."
+        INDEX   { emergencyModeEnable }
+        ::= { elecomEmergencyModeTable 1 }
+
+ElecomEmergencyModeEntry ::=		SEQUENCE {
+          emergencyModeEnable				INTEGER, --,
+--           emergencyWakeupEnable			INTEGER
+	  portsRestrAvaPorts				INTEGER,
+	  portsRestrEdiPorts				INTEGER
+}
+
+emergencyModeEnable 		OBJECT-TYPE
+        SYNTAX  				INTEGER (1..2)
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures Enable or Disable of Emergency Mode"
+        ::= { elecomEmergencyModeEntry 1 }
+
+-- emergencyWakeupEnable 	OBJECT-TYPE
+--         SYNTAX  				INTEGER (1..2)
+--         MAX-ACCESS  		read-write
+-- 	STATUS  				current
+--         DESCRIPTION
+--             	"This OID configures Enable or Disable of Emergency Wakeup"
+--         ::= { elecomEmergencyModeEntry 2 }
+
+portsRestrAvaPorts 		OBJECT-TYPE
+        SYNTAX  		INTEGER (1..2)
+        MAX-ACCESS  		read-write
+	STATUS  		current
+        DESCRIPTION
+            	"This OID configures Disable of restriction or Web/Mail only.
+		[1] No Restriction
+		[2] Web/Mail only"
+        ::= { elecomEmergencyModeEntry 3 }
+
+portsRestrEdiPorts 		OBJECT-TYPE
+        SYNTAX  		INTEGER (1..2)
+        MAX-ACCESS  		read-write
+	STATUS  		current
+        DESCRIPTION
+            	"This OID configures Disable of restriction or Web/Mail only.
+		[1] No Restriction
+		[2] Web/Mail only"
+        ::= { elecomEmergencyModeEntry 3 }
+
+portsRestriEdiports 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS  			read-write
+	STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable or Disable of the ports guest network
+		[1] Enable
+		[2] Disable"
+        ::= { elecomEmergencyModeEntry 4 }
+-- ========================================
+-- SNMP Community
+-- ========================================
+
+elecomSNMPComTable   		OBJECT-TYPE
+      SYNTAX  					SEQUENCE OF ElecomSNMPComEntry
+      MAX-ACCESS  				not-accessible
+      STATUS  					current
+      DESCRIPTION
+              	"Table of SNMP Community."
+      ::= { elecom 30 }
+
+elecomSNMPComEntry 			OBJECT-TYPE
+        SYNTAX  					ElecomSNMPComEntry
+        MAX-ACCESS  			not-accessible
+        STATUS  					current
+        DESCRIPTION
+            	"This OID configures the setting of SNMP Community."
+        INDEX   { snmpGetCommunity }
+        ::= { elecomSNMPComTable 1 }
+
+ElecomSNMPComEntry ::=	SEQUENCE {
+          snmpGetCommunity	DisplayString,
+          snmpSetCommunity	DisplayString
+}
+
+snmpGetCommunity 		OBJECT-TYPE
+        SYNTAX  				DisplayString
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures SNMP Get Community"
+        ::= { elecomSNMPComEntry 1 }
+
+snmpSetCommunity 		OBJECT-TYPE
+        SYNTAX  				DisplayString
+        MAX-ACCESS  		read-write
+	STATUS  				current
+        DESCRIPTION
+            	"This OID configures SNMP Set Community"
+        ::= { elecomSNMPComEntry 2 }
+
+-- ========================================
+-- SNMP
+-- ========================================
+
+elecomSNMPTable   		OBJECT-TYPE
+      SYNTAX  			SEQUENCE OF ElecomSNMPEntry
+      MAX-ACCESS  		not-accessible
+      STATUS  			current
+      DESCRIPTION
+              	"Table of SNMP."
+      ::= { elecom 31 }
+
+elecomSNMPEntry 			OBJECT-TYPE
+        SYNTAX  			ElecomSNMPEntry
+        MAX-ACCESS  			not-accessible
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the setting of SNMP."
+        INDEX   { snmpVersion }
+        ::= { elecomSNMPTable 1 }
+
+ElecomSNMPEntry ::=		SEQUENCE {
+        snmpVersion			        INTEGER,
+        snmpUserName				DisplayString,
+        snmpAuthenticationType			INTEGER,
+        snmpAuthenticationPassword		DisplayString,
+	snmpEncryptionType			INTEGER,
+	preSharedKey				DisplayString,
+	supportedEncryptionType			DisplayString
+}
+
+snmpVersion 				OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the version of SNMP.
+		[1] v1/v2c
+		[2] v3"
+        ::= { elecomSNMPEntry 1 }
+
+snmpUserName 				OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the name of SNMP."
+        ::= { elecomSNMPEntry 2 }
+
+snmpAuthenticationType 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..3)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the type of snmp authentication.
+		[1] SHA
+		[2] MD5
+		[3]NONE"
+        ::= { elecomSNMPEntry 3 }
+
+snmpAuthenticationPassword 		OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the password of snmp authentication."
+        ::= { elecomSNMPEntry 4 }
+
+snmpEncryptionType 			OBJECT-TYPE
+        SYNTAX  			INTEGER (0..5)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the type of snmp encryption.
+		[0] NONE
+		[1] DES
+		[2] 3DES
+		[3] AES128
+		[4] AES192
+		[5] AES256"
+        ::= { elecomSNMPEntry 5 }
+
+preSharedKey		                OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the pre-sharedKey of snmp encryption."
+        ::= { elecomSNMPEntry 6 }
+
+supportedEncryptionType		        OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS 		        read-only
+        STATUS  			current
+        DESCRIPTION
+            	"This OID is snmp supported encryption type."
+        ::= { elecomSNMPEntry 7 }
+
+-- ========================================
+-- Management Protocal
+-- ========================================
+elecommanagementProTable        OBJECT-TYPE
+      SYNTAX  			SEQUENCE OF ManagementProEntry
+      MAX-ACCESS  		not-accessible
+      STATUS  			current
+      DESCRIPTION
+              	"Table of management protocal."
+      ::= { elecom 33 }
+
+managementProEntry 		OBJECT-TYPE
+        SYNTAX  		ElecommanagementProEntry
+        MAX-ACCESS 		not-accessible
+        STATUS  		current
+        DESCRIPTION
+            	"This OID configures the management protocal."
+        INDEX   { rebootscheduleEnable }
+        ::= { elecommanagementProTable 1 }
+
+ElecommanagementProEntry ::=		SEQUENCE {
+        HTTP			INTEGER,
+        HTTPS			INTEGER,
+	FTP			INTEGER,
+	TFTP			INTEGER,
+	SNMP			INTEGER,
+}
+
+HTTP 					OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of HTTP protocal.
+		[1] Enable
+		[2] Disable"
+        ::= { managementProEntry 1 }
+
+HTTPS 					OBJECT-TYPE
+        SYNTAX  			INTEGER (1)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable of HTTPS protocal.
+		[1] Enable Only"
+        ::= { managementProEntry 2 }
+
+FTP 					OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of FTP protocal.
+		[1] Enable
+		[2] Disable"
+        ::= { managementProEntry 5 }
+
+TFTP 					OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of TFTP protocal.
+		[1] Enable
+		[2] Disable"
+        ::= { managementProEntry 6 }
+
+SNMP 					OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of SNMP protocal.
+		[1] Enable
+		[2] Disable"
+        ::= { managementProEntry 7 }
+
+-- ========================================
+-- Reboot Schedule
+-- ========================================
+elecomRebootScheduleTable   	OBJECT-TYPE 
+	SYNTAX 			SEQUENCE OF ElecomRebootScheduleEntry
+ 	MAX-ACCESS 		not-accessible
+	STATUS  			current
+	DESCRIPTION
+		"Table of the Reboot Schedule."
+	::= { elecom 34 }
+
+elecomRebootScheduleEntry 		OBJECT-TYPE
+        SYNTAX  			ElecomRebootScheduleEntry
+        MAX-ACCESS 			not-accessible
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the setting of RebootSchedule."
+        INDEX   { rebootscheduleEnable }
+        ::= { elecomRebootScheduleTable 1 }
+
+ElecomRebootScheduleEntry ::=		SEQUENCE {
+        rebootscheduleEnable			INTEGER,
+        scheduledDays				DisplayString,
+        scheduledRebootTime			INTEGER,
+        delete			                INTEGER,
+	deleteAll				INTEGER
+}
+
+rebootscheduleEnable 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..2)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures Enable/Disable of Reboot Schedule."
+        ::= { elecomRebootScheduleEntry 1 }
+
+scheduledDays 			        OBJECT-TYPE
+        SYNTAX  			DisplayString
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the Days of Reboot Schedule.
+		[01000000] Mon
+		[00100000] Tue
+		[00010000] Wed
+		[00001000] Thu
+		[00000100] Fri
+		[00000010] Sat
+		[00000001] Sun"
+        ::= { elecomRebootScheduleEntry 2 }
+
+scheduledRebootTime 			OBJECT-TYPE
+        SYNTAX  			INTEGER (1..47)
+        MAX-ACCESS 		        read-write
+        STATUS  			current
+        DESCRIPTION
+            	"This OID configures the Times of Reboot Schedule."
+        ::= { elecomRebootScheduleEntry 3 }
+
+delete 			                OBJECT-TYPE
+        SYNTAX  			INTEGER (1)
+        MAX-ACCESS 		        read-only
+        STATUS  			current
+        DESCRIPTION
+            	"This OID delete the schedule user choose."
+        ::= { elecomRebootScheduleEntry 4 }
+
+deleteAll 			        OBJECT-TYPE
+        SYNTAX  			INTEGER (1)
+        MAX-ACCESS 		        read-only
+        STATUS  			current
+        DESCRIPTION
+            	"This OID delete all the schedule."
+        ::= { elecomRebootScheduleEntry 5 }
+
+
+-- ========================================
+-- Client
+-- ========================================
+elecomClientInfoTable   	OBJECT-TYPE 
+	SYNTAX 			SEQUENCE OF ElecomClientInfoEntry
+ 	MAX-ACCESS 		not-accessible
+	STATUS  			current
+	DESCRIPTION
+		"Table of the connected stations."
+	::= { elecom 1000 }
+
+elecomClientInfoEntry 	OBJECT-TYPE
+	SYNTAX			ElecomClientInfoEntry
+	MAX-ACCESS		not-accessible
+	STATUS			current
+	DESCRIPTION
+		"This OID indicates the information about connected clients.
+			 (both of  wired and wireless ) "
+	INDEX   { clientStaAddress }
+	::= { elecomClientInfoTable 1 }
+
+ElecomClientInfoEntry ::=		SEQUENCE {
+        clientStaAddress			DisplayString,
+        clientStaSSID				DisplayString,
+        clientStaAuthType			DisplayString,
+        clientStaCliptType			DisplayString,
+	clientStaBand				INTEGER,
+	clientStaConnTime			DisplayString,
+	clientStaConnTimeStamp 			DisplayString,
+        clientStaIPAddress			DisplayString
+}
+
+clientStaAddress 		OBJECT-TYPE
+	SYNTAX  			DisplayString
+	MAX-ACCESS  	read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates the list the MAC address of the connected clients.
+		 (both of  wired and wireless ) "
+	::= { elecomClientInfoEntry 1 }
+
+clientStaSSID 			OBJECT-TYPE
+	SYNTAX 			DisplayString
+	MAX-ACCESS  	read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates the name of SSID that the STA was connected."
+	::= { elecomClientInfoEntry 2 }
+
+clientStaAuthType 		OBJECT-TYPE
+	SYNTAX  			DisplayString
+	MAX-ACCESS  	read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates the Authentification type."
+	::= { elecomClientInfoEntry 3 }
+
+clientStaCliptType 		OBJECT-TYPE
+	SYNTAX  			DisplayString
+	MAX-ACCESS  	read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates the clipt type."
+	::= { elecomClientInfoEntry 4 }
+
+clientStaBand 			OBJECT-TYPE
+	SYNTAX			INTEGER
+	MAX-ACCESS 		read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates connected bandwidth of the STA."
+	::= { elecomClientInfoEntry 5 }
+
+clientStaConnTime 		OBJECT-TYPE
+	SYNTAX  			DisplayString
+	MAX-ACCESS  	read-only
+	STATUS  			current
+	DESCRIPTION
+		"This OID indicates the connection time of the STA."
+	::= { elecomClientInfoEntry 6 }
+
+clientStaConnTimeStamp 	OBJECT-TYPE
+	SYNTAX  				DisplayString
+	MAX-ACCESS  		read-only
+	STATUS  				current
+	DESCRIPTION
+		"This OID indicates the connected time stamp of the STA."
+	::= { elecomClientInfoEntry 7 }
+
+clientStaIPAddress		OBJECT-TYPE
+        SYNTAX 			DisplayString
+        MAX-ACCESS  	read-only
+	STATUS  			current
+        DESCRIPTION
+		"This OID indicates the IP address of the STA."
+        ::= { elecomClientInfoEntry 8 }
+
+
+-- ========================================
+-- SSID information
+-- ========================================
+
+ssidConfigTable 		OBJECT-TYPE
+	SYNTAX  			SEQUENCE OF ClientSSIDInfoEntry
+  	MAX-ACCESS   	not-accessible
+  	STATUS  		   	current
+  	DESCRIPTION
+          	"The OID table is describe about the each of SSID."
+  ::= { elecom 1010 }
+
+eleApWABSSIDConfigTable 	OBJECT-TYPE
+	SYNTAX					ClientSSIDInfoEntry
+	MAX-ACCESS				not-accessible
+	STATUS					current
+	DESCRIPTION
+          	"The OID table is describe about the each of SSID."
+	INDEX   { ssidName }
+	::= { ssidConfigTable 1 }
+
+
+ClientSSIDInfoEntry ::=
+  SEQUENCE {
+      ssidName
+          DisplayString,
+      ssidNumber
+          INTEGER,
+      ssidAuthType
+          INTEGER,
+      ssidAuthKeyLength
+          INTEGER,
+      ssidWEPKeyType
+          INTEGER,
+      ssidWEPKey
+          DisplayString,
+      ssidWPAType
+          INTEGER,
+      ssidWPAAuthType
+          INTEGER,
+      ssidWPAPreSharedKeyType
+          INTEGER,
+      ssidWPAPreSharedKey
+          DisplayString,
+      ssidAdditionalAuth
+          INTEGER,
+      ssidBroadCast
+          INTEGER,
+      ssidSeparater
+          INTEGER,
+ssidMacRadiusPwdType
+  	 INTEGER,
+ssidMacRadiusPwd
+  	 DisplayString,
+keyRenewInterval
+	 INTEGER,
+loadBalancing
+	 INTEGER
+}
+
+ssidName OBJECT-TYPE
+	SYNTAX  DisplayString
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is the name of the SSID."
+	::= { eleApWABSSIDConfigTable 1 }
+
+ssidNumber OBJECT-TYPE
+	SYNTAX	INTEGER
+	MAX-ACCESS  read-only
+	STATUS  current
+	DESCRIPTION
+		"SSID number."
+	::= { eleApWABSSIDConfigTable 2 }
+
+ssidAuthType OBJECT-TYPE
+	SYNTAX	INTEGER (1..6)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration about type of authentification.
+		[1]No_Authentification
+		[2]WEP
+		[3]WPA-PSK
+		[4]WPA-EAP
+		[5]IEEE802_1x_EAP
+		[6]Enhanced Open
+		"
+	::= { eleApWABSSIDConfigTable 3 }
+
+ssidAuthKeyLength OBJECT-TYPE
+	SYNTAX	INTEGER (1..2)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		" This OID is configuration about Key Length of WEP authentification.
+		  This OID is available when ssidAuthType was WEP. 
+		[1]64bit
+		[2]128bit
+		"
+	::= { eleApWABSSIDConfigTable 4 }
+		
+ssidWEPKeyType OBJECT-TYPE
+	SYNTAX	INTEGER (1..2)
+	MAX-ACCESS   read-write
+	STATUS  current
+	DESCRIPTION
+		" This OID is configuration about Key Type of WEP.
+		  This OID is available when ssidAuthType was WEP. 
+		[1]ascii
+		[2]hex
+		"
+	::= { eleApWABSSIDConfigTable 5 }
+
+ssidWEPKey OBJECT-TYPE
+	SYNTAX	DisplayString
+	MAX-ACCESS   read-write
+	STATUS  current
+	DESCRIPTION
+		" This OID is configuration of WEP Key.
+		  This OID is available when ssidAuthType was WEP. "
+	::= { eleApWABSSIDConfigTable 6 }
+
+
+ssidWPAType OBJECT-TYPE
+	SYNTAX	INTEGER (0..13)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		" This OID is configuration of WEP Key.
+		  This OID is available when ssidAuthType was WPA-PSK or WPA-EAP.
+		[0] WPA_Disable
+		[1] WPA-EAP
+		[2] WPA2 Enterprise
+		[3] WPA/WPA2 Enterprise
+		[4] WPA_only
+		[5] WPA2 Personal
+		[6] WPA/WPA2 Personal
+		[7] WPA3 Enterprise-192bit
+		[8] WPA3 Enterprise
+		[9] WPA2/WPA3 Enterprise
+		[10]WPA3 Personal
+		[11]WPA2/WPA3 Personal
+		[12]Transition Mode On
+		[13]Transition Mode Off
+		"
+	::= { eleApWABSSIDConfigTable 7 }
+
+
+ssidWPAAuthType OBJECT-TYPE
+	SYNTAX	INTEGER (0..3)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration about type of authentification for WPA.
+		  This OID is available when ssidAuthType was WPA-PSK or WPA-EAP.
+		[0] WPA_Disable
+		[1] AES
+		[2] TKIP
+		[3] AES_mixed_mode
+		"
+		
+	::= { eleApWABSSIDConfigTable 8 }
+
+ssidWPAPreSharedKeyType OBJECT-TYPE
+	SYNTAX	INTEGER (1..2)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration about preshared key type of WPA.
+		  This OID is available when ssidAuthType was WPA-PSK or WPA-EAP.
+		[1] Path Phrase
+		[2] HEX
+		"
+	::= { eleApWABSSIDConfigTable 9 }
+
+
+ssidWPAPreSharedKey OBJECT-TYPE
+	SYNTAX	DisplayString
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration about preshared key of WPA.
+		  This OID is available when ssidAuthType was WPA-PSK or WPA-EAP."
+	::= { eleApWABSSIDConfigTable 10 }
+
+
+ssidAdditionalAuth OBJECT-TYPE
+	SYNTAX	INTEGER (1..4)
+	MAX-ACCESS  	read-write
+	STATUS  	current
+	DESCRIPTION
+		"This OID is configuration about addtional authentification.
+		[1] No Additional Auth
+		[2] MacFilter
+		[3] MacFilter and MacRadiusAuth
+		[4] MacRadiusAuth
+		"
+	::= { eleApWABSSIDConfigTable 11 }
+
+ssidBroadCast OBJECT-TYPE
+	SYNTAX	INTEGER (1..2)
+	MAX-ACCESS   read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration of SSID broadcasting.
+		[1] Disable(stealth)
+		[2] Enable
+		"
+	::= { eleApWABSSIDConfigTable 12 }
+
+
+ssidSeparater OBJECT-TYPE
+	SYNTAX	INTEGER (1..3)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID is configuration of SSID separater.
+		[1] Disable
+		[2] STA Separater
+		[3] SSID Separater
+	"
+	::= { eleApWABSSIDConfigTable 13 }
+
+ssidMacRadiusPwdType OBJECT-TYPE
+	    SYNTAX  INTEGER (1..2)
+            MAX-ACCESS  read-write
+            STATUS  current
+            DESCRIPTION
+                "This OID is configuration of SSID Mac RADIUS Password Type.
+                [1] Use MAC address
+                [2] Use the following password
+            "
+            ::= { eleApWABSSIDConfigTable 14 }
+
+ssidMacRadiusPwd OBJECT-TYPE
+	    SYNTAX  DisplayString
+	    MAX-ACCESS  read-write
+	    STATUS  current
+	    DESCRIPTION
+		"This OID is configuration of SSID Mac RADIUS Password."
+	    ::= { eleApWABSSIDConfigTable 15 }
+
+keyRenewInterval OBJECT-TYPE
+	    SYNTAX  INTEGER (0..9999)
+	    MAX-ACCESS  read-write
+	    STATUS  current
+	    DESCRIPTION
+		"This OID is configuration of SSID Key renew interval."
+	    ::= { eleApWABSSIDConfigTable 16 }
+
+loadBalancing OBJECT-TYPE
+	    SYNTAX  INTEGER (0..200)
+	    MAX-ACCESS  read-write
+	    STATUS  current
+	    DESCRIPTION
+		"This OID is configuration of SSID Load balancing.(1 - 50 (2.4GHz) / 1 - 200 (5GHz))"
+	    ::= { eleApWABSSIDConfigTable 18 }
+
+-- ========================================
+-- Wireless configuration
+-- ========================================
+
+wirelessConfigTable OBJECT-TYPE
+  	SYNTAX  SEQUENCE OF WirelessConfigEntry
+  	MAX-ACCESS  not-accessible
+  	STATUS  current
+  	DESCRIPTION
+         	 ""
+  	::= { elecom 1020 }
+
+
+eleApWABwirelessConfigTable OBJECT-TYPE
+	SYNTAX	WirelessConfigEntry
+	MAX-ACCESS	not-accessible
+	STATUS	current
+	DESCRIPTION
+		""
+	INDEX   { wireless }
+	::= { wirelessConfigTable 1 }
+
+
+WirelessConfigEntry ::=
+  SEQUENCE {
+      wireless
+          INTEGER,
+      wiressMode
+          INTEGER,
+      autoChannel 
+          INTEGER,
+      channel
+          INTEGER,
+      autoChannelRange
+          INTEGER,
+      channelBandwidth
+          INTEGER,
+      bss-BasicRateSet
+          INTEGER,
+      txPower
+          INTEGER,
+      ssidEnableNumber
+   	 INTEGER,
+      airtimeFairness      INTEGER,
+      sharedRateForAF      INTEGER,
+      multiUnicastCon      INTEGER,
+      switchAntenna      INTEGER,
+      wirelessFastRoaming   INTEGER,
+      wirelessElevenK   INTEGER
+  }
+		
+wireless OBJECT-TYPE
+	SYNTAX INTEGER (1..2)
+	MAX-ACCESS  read-write
+	STATUS  current
+	DESCRIPTION
+		"This OID configres the Enable _ Disaable the Wireless output."
+	::= { eleApWABwirelessConfigTable 1 }
+
+wiressMode OBJECT-TYPE
+	SYNTAX INTEGER {
+		disable(0),
+		b(1),
+		g(2),
+		bg(3),
+		gn(4),
+		bgn(5),
+		a(6),
+		an(7),
+		anac(8)
+	}
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This OID configres the specification of WiFi.
+		 To configure the OID, Enable the OID of Wireless.
+			[1] 11b
+			[2] 11g
+			[3] 11b_g
+			[4] 11g_n
+			[5] 11b_g_n
+			[6] 11a
+			[7] 11a_n
+			[8] 11a_n_ac
+		 "
+	::= { eleApWABwirelessConfigTable 2 }
+
+autoChannel OBJECT-TYPE
+	SYNTAX INTEGER (1..2)
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"enable(1)
+		  disable(2)
+		"
+	::= { eleApWABwirelessConfigTable 3 }
+
+channel OBJECT-TYPE
+	SYNTAX INTEGER
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This OID configres the channel.
+		 To configure the OID, Disable the OID of AutoChannel.
+		 (2.4GHz)
+		 	1,2,3,4,5,6,7,8,9,10,11,12,13
+		 (5GHz)
+		 	36,40,44,48,52,56,60,64,100,104,108,112,116,120,124,128,132,136,140"
+	::= { eleApWABwirelessConfigTable 4 }
+
+
+autoChannelRange OBJECT-TYPE
+	SYNTAX INTEGER {
+	disable(0),
+	ch1-11(1),
+	ch1-13(2),
+	w52(3),
+	w52w53(4),
+	w52w53w56(5)
+	}
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This parameter is configration of enable _ disable AutoChannel and selection of bandwidth.
+		 please specify from below. 
+		(Disable AutoChannel)
+		  [0] Disable
+		(Enable AutoChannel)
+		  (11b, 11g, 11b_g, 11b_n, 11b_g_n)
+		    [1] ch1-11
+		    [2] ch1-13
+		  (11a, 11a_n, 11a_n_ac)
+			[3]W52
+			[4]W52_W53
+			[5]W52_W53_W56
+			"
+	::= { eleApWABwirelessConfigTable 5 }
+
+channelBandwidth OBJECT-TYPE
+	SYNTAX INTEGER {
+	disable(0),
+	band20MHz(1),
+	band40MHz(2),
+	auto(3),
+	band40MHzplusNextCh(4),
+	band40MHzplusPrevCh(5),
+	autoplusNextCh(6),
+	autoplusPrevCh(7),
+	auto804020MHz(8),
+	auto160804020MHz(9)
+	}
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This parameter is configration of ChannelBandwidth .
+		 ChannelBandwidth configures about band width for channel.
+		 This parameter is selectable. please specify from below. 
+		(11b, 11g, 11b_g)
+		  <AutoChannel On_Off>
+			[1] 20MHz
+		(11b_n, 11b_g_n)
+		  <AutoChannel On>
+			[1] 20MHz
+			[2] 40MHz
+			[3] Auto
+		  <AutoChannel Off (ch 1,2,3,4)  >
+			[1] 20MHz
+			[5] 40MHz + previous ch
+			[7] Auto  + previous ch
+		  <AutoChannel Off (ch 5,6,7,8,9) >
+			[1] 20MHz
+			[4] 40MHz + next ch
+			[5] 40MHz + previous ch
+			[6] Auto + next ch
+			[7] Auto + previous ch
+		  <AutoChannel Off (ch 10,11,12,13) >
+			[1] 20MHz
+			[4] 40MHz + next ch
+			[6] Auto + next ch
+		(11a)
+		  <AutoChannel On_Off>
+			[1] 20MHz
+		(11a_n)
+		  <AutoChannel On>
+			[1] 20MHz
+			[2] 40MHz
+		  <AutoChannel Off (ch 36, 44, 52, 60, 100, 108, 116, 124, 132) >
+			[1] 20MHz
+			[5] 40MHz + previous ch
+		  <AutoChannel Off (ch 40, 48, 56, 64, 104, 112, 120, 128, 136) >
+			[1] 20MHz
+			[6] Auto + next ch
+		(11a_n_ac)
+		  <AutoChannel On>
+			[1] 20MHz
+			[8] Auto 80_40_20MHz
+			[9] Auto 160_80_40_20MHz
+		  <AutoChannel Off (ch 36, 44, 52, 60, 100, 108, 116, 124) >
+			[1] 20MHz
+			[5] 40MHz + previous ch
+			[8] Auto 80_40_20MHz
+			[9] Auto 160_80_40_20MHz
+		  <AutoChannel Off (ch 40, 48, 56, 64, 104, 112, 120, 128) >
+			[1] 20MHz
+			[4] 40MHz + next ch
+			[8] Auto 80_40_20MHz
+			[9] Auto 160_80_40_20MHz
+		  <AutoChannel Off (ch 132) >
+			[1] 20MHz
+			[5] 40MHz + previous ch
+		  <AutoChannel Off (ch 136)>
+			[1] 20MHz
+			[4] 40MHz + next ch
+		  <AutoChannel Off (ch 140)>
+			[1] 20MHz   "
+		 
+	::= { eleApWABwirelessConfigTable 6 }
+
+bss-BasicRateSet OBJECT-TYPE
+	SYNTAX INTEGER {
+		disable(0),
+		bss-1-2-Mbps(1),
+		bss-1-2-5-11Mbps-or-all(2),
+		bss-1-2-5-6-11-12-24Mbps(3),
+		bss-6-12-24Mbps(4),
+		all(5)
+	}
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This parameter is configration of BasicRateSet.
+		 BasicRateSet is configration of communication speed. 
+		 select the transmission speed of from below.
+		 (for 2.4MHz : 11b)  
+		 [0] : Disable
+		 [1] : 1,2Mbps
+		 [2] : all
+		 
+		 (for 2.4MHz : 11b)  
+		 [0] : Disable
+		 [1] : 1,2Mbps
+		 [2] : 1,2,5.5,11Mbps
+		 [3] : 1,2,5.5,6,11,12,24Mbps
+		 [5] : all
+		 
+		 (for 5MHz)
+		 [0] : Disable
+		 [4] : 6,12,24Mbp
+		 [5] : all"
+	::= { eleApWABwirelessConfigTable 7 }
+
+txPower OBJECT-TYPE
+	SYNTAX INTEGER {
+		disable(0),
+		tx10percent(10),
+		tx25percent(25),
+		tx50percent(50),
+		tx75percent(75),
+		tx90percent(90),
+		tx100percent(100)
+	}
+	MAX-ACCESS  read-write
+	STATUS  		current
+	DESCRIPTION
+		"This parameter is configration of Tx power of radio wave.
+		 Tx power configures radio wave intensity of transmit power.
+		 This parameter is selectable. please specify from below. 
+		 [100]100%
+		 [90]90%
+		 [75]75%
+		 [50]50%
+		 [25]25%
+		 [10]10%
+		 [0] Disable"
+	::= { eleApWABwirelessConfigTable 8 }
+ssidEnableNumber OBJECT-TYPE
+   	 SYNTAX INTEGER (1..16)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configres the number of SSID.
+         This parameter is selectable. please specify from below.
+            1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
+    ::= { eleApWABwirelessConfigTable 9 }
+
+airtimeFairness OBJECT-TYPE
+   	 SYNTAX INTEGER (1..3)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configres the type of airtime fairness.
+         [1] Auto
+	 [2] Static
+	 [3] Disabled"
+    ::= { eleApWABwirelessConfigTable 10 }
+
+sharedRateForAF OBJECT-TYPE
+   	 SYNTAX INTEGER (0..100)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configres the rate of airtime fairness."
+    ::= { eleApWABwirelessConfigTable 11 }
+
+multiUnicastCon OBJECT-TYPE
+   	 SYNTAX INTEGER (1..2)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configures Enable/Disable of multi unicast conversion.
+	 [1] Enable
+	 [2] Disable"
+    ::= { eleApWABwirelessConfigTable 12 }
+
+switchAntenna OBJECT-TYPE
+   	 SYNTAX INTEGER (1..2)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configures Externel/Externel of antenna.
+	 [1] Externel
+	 [2] Externel"
+    ::= { eleApWABwirelessConfigTable 13 }
+
+wirelessFastRoaming OBJECT-TYPE
+   	 SYNTAX INTEGER (1..2)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configures Enable/Disable of fast roaming.
+	 [1] Enable
+	 [2] Disable"
+    ::= { eleApWABwirelessConfigTable 16 }
+
+wirelessElevenK OBJECT-TYPE
+   	 SYNTAX INTEGER (1..2)
+    	MAX-ACCESS  read-write
+	STATUS  		current
+    	DESCRIPTION
+        "This OID configures Enable/Disable of 802.11K.
+	 [1] Enable
+	 [2] Disable"
+    ::= { eleApWABwirelessConfigTable 17 }
+
+-- ========================================
+-- Connect/Disconnect Table configuration
+-- ========================================
+condisconTable			OBJECT IDENTIFIER ::= { elecom 1020 }
+elecomCondisconTableOpt1		OBJECT IDENTIFIER ::= { condisconTable 1 }
+elecomCondisconTableOpt2		OBJECT IDENTIFIER ::= { elecomCondisconTableOpt1 20 }
+elecomCondisconTableOpt3		OBJECT IDENTIFIER ::= { elecomCondisconTableOpt2 2 }
+elecomCondisconTableOpt4		OBJECT IDENTIFIER ::= { elecomCondisconTableOpt3 1 }
+
+
+elecomCondisconChannel				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 1 }
+elecomCondiscon2GChannel				OBJECT IDENTIFIER ::= { elecomCondisconChannel 4 }
+elecomCondiscon2GChannelList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 2.4G channel list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon24GChannel 1 }
+
+elecomCondiscon5GChannel				OBJECT IDENTIFIER ::= { elecomCondisconChannel 3 }
+elecomCondiscon5GChannelList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G channel list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GChannel 1 }
+
+elecomCondisconSSID				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 2 }
+elecomCondiscon2GSSID				OBJECT IDENTIFIER ::= { elecomCondisconSSID 4 }
+elecomCondiscon2GSSIDList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 2.4G SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon2GSSID 1 }
+
+elecomCondiscon5GSSID				OBJECT IDENTIFIER ::= { elecomCondisconSSID 3 }
+elecomCondiscon5GSSIDList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GSSID 1 }
+
+elecomCondisconMAC				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 3 }
+elecomCondiscon2GMAC				OBJECT IDENTIFIER ::= { elecomCondisconMAC 4 }
+elecomCondiscon2GMACList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon2GMAC 1 }
+
+elecomCondiscon5GMAC				OBJECT IDENTIFIER ::= { elecomCondisconMAC 3 }
+elecomCondiscon5GMACList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G MAC list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GMAC 1 }
+
+elecomCondisconStatus				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 4 }
+elecomCondiscon2GStatus				OBJECT IDENTIFIER ::= { elecomCondisconStatus 4 }
+elecomCondiscon2GStatusList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon2GStatus 1 }
+
+elecomCondiscon5GStatus				OBJECT IDENTIFIER ::= { elecomCondisconStatus 3 }
+elecomCondiscon5GStatusList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G Status list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GStatus 1 }
+
+elecomCondisconSignal				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 5 }
+elecomCondiscon2GSignal				OBJECT IDENTIFIER ::= { elecomCondisconSignal 4 }
+elecomCondiscon2GSignalList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon2GSignal 1 }
+
+elecomCondiscon5GSignal			OBJECT IDENTIFIER ::= { elecomCondisconSignal 3 }
+elecomCondiscon5GSignalList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G Signal list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GSignal 1 }
+
+elecomCondisconTimeStamp				OBJECT IDENTIFIER ::= { elecomCondisconTableOpt4 6 }
+elecomCondiscon2GTimeStamp			OBJECT IDENTIFIER ::= { elecomCondisconTimeStamp 4 }
+elecomCondiscon2GTimeStampList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the SSID list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon2GTimeStamp 1 }
+
+elecomCondiscon5GTimeStamp		OBJECT IDENTIFIER ::= { elecomCondisconTimeStamp 3 }
+elecomCondiscon5GTimeStampList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G TimeStamp list of the Connect/Disconnect STA connecting Access Point."
+	::= { elecomCondiscon5GTimeStamp 1 }
+
+-- ========================================
+-- NeighborAP Table configuration
+-- ========================================
+NeighborAPTable			OBJECT IDENTIFIER ::= { elecom 1020 }
+elecomNeighborAPTableOpt1		OBJECT IDENTIFIER ::= { NeighborAPTable 1 }
+elecomNeighborAPTableOpt2		OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt1 21 }
+elecomNeighborAPTableOpt3		OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt2 2 }
+elecomNeighborAPTableOpt4		OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt3 1 }
+
+
+elecomNeighborAPChannel				OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt4 1 }
+elecomNeighborAP2GChannel				OBJECT IDENTIFIER ::= { elecomNeighborAPChannel 4 }
+elecomNeighborAP2GChannelList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 2.4G channel list of the NeighborAP."
+	::= { elecomNeighborAP24GChannel 1 }
+
+elecomNeighborAP5GChannel				OBJECT IDENTIFIER ::= { elecomNeighborAPChannel 3 }
+elecomNeighborAP5GChannelList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G channel list of the NeighborAP."
+	::= { elecomNeighborAP5GChannel 1 }
+
+elecomNeighborAPSSID				OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt4 2 }
+elecomNeighborAP2GSSID				OBJECT IDENTIFIER ::= { elecomNeighborAPSSID 4 }
+elecomNeighborAP2GSSIDList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 2.4G SSID list of the NeighborAP."
+	::= { elecomNeighborAP2GSSID 1 }
+
+elecomNeighborAP5GSSID				OBJECT IDENTIFIER ::= { elecomNeighborAPSSID 3 }
+elecomNeighborAP5GSSIDList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G SSID list of the NeighborAP."
+	::= { elecomNeighborAP5GSSID 1 }
+
+elecomNeighborAPMAC				OBJECT IDENTIFIER ::= { elecomNeighborAPTableOpt4 3 }
+elecomNeighborAP2GMAC				OBJECT IDENTIFIER ::= { elecomNeighborAPMAC 4 }
+elecomNeighborAP2GMACList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the SSID list of the NeighborAP."
+	::= { elecomNeighborAP2GMAC 1 }
+
+elecomNeighborAP5GMAC				OBJECT IDENTIFIER ::= { elecomNeighborAPMAC 3 }
+elecomNeighborAP5GMACList OBJECT-TYPE
+	SYNTAX	DisplayString
+    	MAX-ACCESS	read-only
+	STATUS	current
+	DESCRIPTION
+		"This OID show the 5G MAC list of the NeighborAP."
+	::= { elecomNeighborAP5GMAC 1 }
+
+-- ========================================
+-- VLAN configuration
+-- ========================================
+elecomVLANTable   	OBJECT-TYPE 
+	SYNTAX 			SEQUENCE OF ElecomVLANEntry
+ 	MAX-ACCESS 		not-accessible
+	STATUS  			current
+	DESCRIPTION
+		"Table of the VLAN."
+	::= { elecom 1030 }
+
+elecomVLANEntry 		OBJECT-TYPE
+	SYNTAX			ElecomVLANEntry
+	MAX-ACCESS		not-accessible
+	STATUS			current
+	DESCRIPTION
+		"This OID indicates the information about vlan.
+			 (both of  wired and wireless )"
+	INDEX   { manVLANID }
+	::= { elecomVLANTable 1 }
+
+ElecomVLANEntry ::=			SEQUENCE {
+        manVLANID				INTEGER,
+        vlanMode					INTEGER,
+        vlanId						INTEGER
+}
+
+manVLANID			OBJECT-TYPE
+	SYNTAX	      		INTEGER (1..4094)
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"Management vlan ID."
+	::= { elecomVLANEntry 1 }
+
+vlanMode				OBJECT-TYPE
+	SYNTAX	      		INTEGER {
+		untaggedPort(1),
+		taggedPort(2)
+	}
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"VLAN mode."
+	::= { elecomVLANEntry 2 }
+
+vlanId					OBJECT-TYPE
+	SYNTAX	      		INTEGER (1..4094)
+	MAX-ACCESS 		read-write
+	STATUS 			current
+	DESCRIPTION
+		"vlan ID."
+	::= { elecomVLANEntry 3 }
+
+END
+
+
