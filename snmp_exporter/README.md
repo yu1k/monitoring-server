@@ -32,9 +32,11 @@ $ cd /home/snmp_exporter/generator/
 YAMAHAのプライベートMIBをダウンロードします。
 
 $ cd /home/snmp_exporter/generator/mibs/
-$ cp /home/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib /home/snmp_exporter/generator/mibs/
+$ cp /home/private_mib/elecom_private_mib_v1.4.17.mib /home/snmp_exporter/generator/mibs/
 $ cd /home/snmp_exporter/generator/
 ElecomのプライベートMIBをダウンロードします。
+
+$ export MIBDIRS=/home/snmp_exporter/generator/mibs
 
 make generate
 generator.ymlの定義に従ってsnmp.ymlを生成します。
@@ -49,3 +51,14 @@ $ rm /home/snmp.yml && cp /home/snmp_exporter/generator/snmp.yml /home/
 $ sudo chmod 777 ./snmp_exporter/generator/generator.yml
 コンテナ内のgenerator.ymlをホスト側で編集できるように権限をつけます。
 ```
+
+## プライベートMIBについて
+
+`./private_mib/` ディレクトリ以下のプライベートMIBのファイルは以下のサイトから取得しました。
+
+- [Elecom WAB-S1167-PS](https://www.elecom.co.jp/products/WAB-S1167-PS.html)
+  - [プライベートMIB URL](./private_mib/elecom_private_mib_v1.4.17.mib)
+  - [URL](https://www.elecom.co.jp/support/download/network/wireless_lan/ap/wab-s1167-ps/index.html)
+- [Elecom WAB-S1775](https://www.elecom.co.jp/products/WAB-S1775.html)
+  - [プライベートMIB URL](./private_mib/S1775_elecom_private_mib_v1.1.4.mib)
+  - [URL](https://www.elecom.co.jp/support/download/network/wireless_lan/ap/wab-s1775/)
