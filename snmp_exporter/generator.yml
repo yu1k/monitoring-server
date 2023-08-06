@@ -97,5 +97,6 @@ modules:
   elecom_ap:
     walk:
       - clientStaIPAddress
+    version: 2
     auth:
       community: public
