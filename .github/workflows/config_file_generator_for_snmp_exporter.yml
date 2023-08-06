@@ -196,14 +196,6 @@ jobs:
           ## Start Running
           echo "Start running for generate: "
           cd $HOME/work/snmp_exporter/generator
-          
-          echo '===='
-          echo '####'
-          echo 'debug ls . : ' && ls ./
-          echo 'debug ls ./mibs : ' && ls ./mibs
-          echo '####'
-          echo '===='
-          
           export MIBDIRS=./mibs
           ./generator generate
 
