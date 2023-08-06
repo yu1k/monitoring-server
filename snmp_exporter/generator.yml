@@ -1,3 +1,9 @@
+# sample: https://github.com/prometheus/snmp_exporter/tree/main/generator#file-format
+auths:
+  public_v2:
+    version: 2
+    community: public
+
 modules:
   # Default IF-MIB interfaces table with ifIndex.
   if_mib:
@@ -20,9 +26,6 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
-    version: 2
-    auth:
-      community: public
 
   #######################################################################
   # RTX1200のMIB生成コンフィグ
@@ -31,9 +34,6 @@ modules:
   # から拾っています。
   #######################################################################
   rtx1200:
-    version: 1
-    auth:
-      community: public
     walk:
       # 機器の説明。機器名と、ファームウェアリビジョン
       - sysDescr
@@ -87,9 +87,6 @@ modules:
       - picoIPv4MIB
       - picoIPv6MIB
       - picoNAPTMIB
-    version: 2
-    auth:
-      community: public
 
   #
   # Elecom AP
@@ -97,6 +94,3 @@ modules:
   elecom_ap:
     walk:
       - clientStaIPAddress
-    version: 2
-    auth:
-      community: public
