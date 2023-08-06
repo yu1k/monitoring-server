@@ -157,7 +157,11 @@ jobs:
 
           # $GITHUB_WORKSPACE/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib を $HOME/work/snmp_exporter/generator/mibs に移動する
           cd $HOME/work/snmp_exporter/generator/mibs/
-          mv $GITHUB_WORKSPACE/snmp_exporter/private_mib/WAB-S1167-PS-FW-V1-5-6/elecom_private_mib_v1.4.17.mib ./
+
+          # WAB-S1167-PS のPrivate MIBファイル ( WAB-S1167-PS のMIBファイルなのですが、実際に検証したところ WAB-S1167-PS では対応していないようでしたが、一応配置します。)
+          mv $GITHUB_WORKSPACE/snmp_exporter/private_mib/elecom_private_mib_v1.4.17.mib ./
+          # WAB-S1775 のPrivate MIBファイル
+          mv $GITHUB_WORKSPACE/snmp_exporter/private_mib/S1775_elecom_private_mib_v1.1.4.mib ./
 
           # $HOME/work/snmp_exporter/generator/ に戻る
           cd ../
