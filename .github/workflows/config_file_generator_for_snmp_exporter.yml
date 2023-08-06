@@ -89,16 +89,16 @@ jobs:
           # snmp_exporter/snmp.yml が存在するのであれば 削除します。
           if [ "$(ls $GITHUB_WORKSPACE/snmp_exporter/snmp.yml)" != '' ]; then
             rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
+
+            echo 'ls ./ : ' && ls .
+
+            git config --global user.name "GitHub Action"
+            git config --global user.email "action@github.com"
+
+            git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
+            git commit -m "remove snmp.yml"
+            git push origin main
           fi
-
-          echo 'List segments: ' && ls .
-
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-
-          git add $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
-          git commit -m "remove snmp.yml"
-          git push origin main
 
       - name: setup for snmp and misc dependencies
         shell: bash
