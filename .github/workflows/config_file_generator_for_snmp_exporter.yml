@@ -86,7 +86,11 @@ jobs:
       - name: Remove $GITHUB_WORKSPACE/snmp_exporter/snmp.yml to initialize the repository.
         shell: bash
         run: |
-          rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
+          # snmp_exporter/snmp.yml が存在するのであれば 削除します。
+          if [ "$(ls $GITHUB_WORKSPACE/snmp_exporter/snmp.yml)" != '' ]; then
+            rm $GITHUB_WORKSPACE/snmp_exporter/snmp.yml
+          fi
+
           echo 'List segments: ' && ls .
 
           git config --global user.name "GitHub Action"
@@ -99,6 +103,7 @@ jobs:
       - name: setup for snmp and misc dependencies
         shell: bash
         run: |
+
           # unzipコマンド、p7zip-full、make、build-essential、などビルドと準備に使うツール
           # Net-SNMP等ライブラリをapt経由でインストールする
           sudo apt-get update && sudo apt-get install -y unzip p7zip-full make build-essential libsnmp-dev
